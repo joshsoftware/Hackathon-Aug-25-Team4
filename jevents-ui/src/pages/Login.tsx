@@ -10,10 +10,45 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "@/api/auth";
+import { LoginRequest, UserLocalStorage } from "@/types/auth";
+import { USER_LOALSTORAGE_KEY } from "@/constants/user";
+import { setLocalStorage } from "@/lib/localStorage";
+import { useUserRole } from "@/context/user";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { setRole } = useUserRole();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const body: LoginRequest = {
+      user: {
+        email: email,
+        password: password,
+      },
+    };
+
+    try {
+      const data = await login(body);
+      setLocalStorage<UserLocalStorage>(USER_LOALSTORAGE_KEY, {
+        token: data.token,
+        user: data.user,
+      });
+
+      setRole(data.user.role);
+
+      navigate("/");
+    } catch (error) {
+      console.error("User Login:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-subtle p-4">
@@ -46,6 +81,8 @@ export default function Login() {
                   type="email"
                   placeholder="Enter your email"
                   className="transition-smooth focus:border-primary"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
@@ -57,6 +94,8 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     className="transition-smooth focus:border-primary pr-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <Button
                     type="button"
@@ -83,7 +122,9 @@ export default function Login() {
                 </a>
               </div>
 
-              <Button className="w-full btn-hero">Sign In</Button>
+              <Button className="w-full btn-hero" onClick={handleSignIn}>
+                Sign In
+              </Button>
             </form>
 
             <div className="text-center">

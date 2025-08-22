@@ -10,14 +10,71 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { USER_LOALSTORAGE_KEY, USER_ROLES, UserRole } from "@/constants/user";
+import { SignUpRequest, UserLocalStorage } from "@/types/auth";
+import { setLocalStorage } from "@/lib/localStorage";
+import { signup } from "@/api/auth";
+import { useUserRole } from "@/context/user";
 
 export default function Signup() {
+  const navigate = useNavigate();
+  const { setRole } = useUserRole();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+    role: USER_ROLES.ATTENDEE as UserRole,
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleRoleChange = (value: UserRole) => {
+    setFormData((prev) => ({
+      ...prev,
+      role: value,
+    }));
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const body: SignUpRequest = {
+      user: {
+        name: formData.name,
+        email: formData.name,
+        password: formData.password,
+        password_confirmation: formData.password_confirmation,
+        role: formData.role,
+      },
+    };
+
+    try {
+      const data = await signup(body);
+      setLocalStorage<UserLocalStorage>(USER_LOALSTORAGE_KEY, {
+        token: data.token,
+        user: data.user,
+      });
+
+      setRole(data.user.role);
+
+      navigate("/");
+    } catch (error) {
+      console.error("User Login:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-subtle p-4">
@@ -42,60 +99,53 @@ export default function Signup() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <form className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    placeholder="John"
-                    className="transition-smooth focus:border-primary"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    placeholder="Doe"
-                    className="transition-smooth focus:border-primary"
-                  />
-                </div>
+            <form className="space-y-4" onSubmit={handleSignUp}>
+              {/* Name */}
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Name"
+                  className="transition-smooth focus:border-primary"
+                />
               </div>
 
+              {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
-                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="email@example.com"
                   className="transition-smooth focus:border-primary"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 (555) 000-0000"
-                  className="transition-smooth focus:border-primary"
-                />
-              </div>
-
+              {/* Role */}
               <div className="space-y-3">
                 <Label>Account Type</Label>
                 <RadioGroup
-                  defaultValue="attendee"
+                  value={formData.role}
+                  onValueChange={handleRoleChange}
                   className="flex flex-col space-y-2"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="attendee" id="attendee" />
+                    <RadioGroupItem value={USER_ROLES.ATTENDEE} id="attendee" />
                     <Label htmlFor="attendee" className="font-normal">
                       Event Attendee - Discover and book events
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="organizer" id="organizer" />
+                    <RadioGroupItem
+                      value={USER_ROLES.ORGANIZER}
+                      id="organizer"
+                    />
                     <Label htmlFor="organizer" className="font-normal">
                       Event Organizer - Create and manage events
                     </Label>
@@ -103,12 +153,16 @@ export default function Signup() {
                 </RadioGroup>
               </div>
 
+              {/* Password */}
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
                     placeholder="Create a strong password"
                     className="transition-smooth focus:border-primary pr-10"
                   />
@@ -128,12 +182,16 @@ export default function Signup() {
                 </div>
               </div>
 
+              {/* Confirm Password */}
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="password_confirmation">Confirm Password</Label>
                 <div className="relative">
                   <Input
-                    id="confirmPassword"
+                    id="password_confirmation"
+                    name="password_confirmation"
                     type={showConfirmPassword ? "text" : "password"}
+                    value={formData.password_confirmation}
+                    onChange={handleChange}
                     placeholder="Confirm your password"
                     className="transition-smooth focus:border-primary pr-10"
                   />
@@ -153,34 +211,10 @@ export default function Signup() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Checkbox id="terms" />
-                <Label htmlFor="terms" className="text-sm">
-                  I agree to the{" "}
-                  <a
-                    href="#"
-                    className="text-primary hover:text-primary/80 transition-smooth"
-                  >
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a
-                    href="#"
-                    className="text-primary hover:text-primary/80 transition-smooth"
-                  >
-                    Privacy Policy
-                  </a>
-                </Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox id="marketing" />
-                <Label htmlFor="marketing" className="text-sm">
-                  Send me event recommendations and updates
-                </Label>
-              </div>
-
-              <Button className="w-full btn-hero">Create Account</Button>
+              {/* Submit */}
+              <Button type="submit" className="w-full btn-hero">
+                Create Account
+              </Button>
             </form>
 
             <div className="text-center">
