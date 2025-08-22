@@ -8,4 +8,5 @@ Rails.application.routes.draw do
   post "/auth/login", to: "authentication#login"
   resources :users, only: [ :create ]
   # get "users/create", to: "users#create"
+  resources :events, only: [:create]
 end

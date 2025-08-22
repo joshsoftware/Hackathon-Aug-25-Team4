@@ -1,5 +1,5 @@
 class JwtService
-  SECRET_KEY = ENV["SECRET_KEY"]
+  SECRET_KEY = 'hello'
 
   def self.encode(payload, exp = 24.hours.from_now)
     payload[:exp] = exp.to_i
