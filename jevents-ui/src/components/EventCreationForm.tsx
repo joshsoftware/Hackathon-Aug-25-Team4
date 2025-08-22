@@ -1,33 +1,89 @@
-import {
-  Calendar,
-  MapPin,
-  DollarSign,
-  Users,
-  Image,
-  Clock,
-  Tag,
-} from "lucide-react";
+import { useState } from "react";
+import { Calendar, MapPin, Tag, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { axiosPrivate } from "@/axios/instance";
+import { CreateEventRequest, Ticket } from "@/types/events";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function EventCreationForm() {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [venue, setVenue] = useState("");
+  const [address, setAddress] = useState("");
+
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+
+  const handleTicketChange = (
+    index: number,
+    field: keyof Ticket,
+    value: string | number,
+  ) => {
+    const updated = [...tickets];
+    updated[index] = { ...updated[index], [field]: value };
+    setTickets(updated);
+  };
+
+  const addTicket = () => {
+    setTickets([
+      ...tickets,
+      {
+        name: `Ticket ${tickets.length + 1}`,
+        price: 0,
+        status: 1,
+        opening_start: "",
+        opening_end: "",
+        capacity: 0,
+      },
+    ]);
+  };
+
+  const removeTicket = (index: number) => {
+    setTickets(tickets.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const payload: CreateEventRequest = {
+      event: {
+        title,
+        description,
+        category,
+        start_time: startDate,
+        end_time: endDate,
+        location: `${venue}, ${address}`,
+      },
+      tickets,
+    };
+
+    try {
+      const res = await axiosPrivate.post("/events", payload);
+      console.log("Event created:", res.data);
+    } catch (err) {
+      console.error("Error creating event:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background py-8 px-4 lg:px-6">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Create New Event</h1>
-          <p className="text-muted-foreground">
-            Fill out the details below to create your event and start selling
-            tickets
-          </p>
-        </div>
+        <h1 className="text-xl md:text-4xl font-bold mb-6">Event</h1>
 
-        <form className="space-y-8">
-          {/* Basic Information */}
-          <Card className="card-elevated">
+        <form className="space-y-8" onSubmit={handleSubmit}>
+          {/* Basic Info */}
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Calendar className="h-5 w-5 mr-2 text-primary" />
@@ -35,55 +91,39 @@ export default function EventCreationForm() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div>
-                <Label htmlFor="title" className="text-sm font-medium">
-                  Event Title *
-                </Label>
-                <Input
-                  id="title"
-                  placeholder="Enter your event title"
-                  className="mt-2"
-                />
-              </div>
+              <Input
+                placeholder="Event Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+              <Textarea
+                placeholder="Event Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
 
+              {/* Category Dropdown */}
               <div>
-                <Label htmlFor="description" className="text-sm font-medium">
-                  Event Description *
-                </Label>
-                <Textarea
-                  id="description"
-                  placeholder="Describe what makes your event special..."
-                  className="mt-2 min-h-[120px]"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="category" className="text-sm font-medium">
-                    Category *
-                  </Label>
-                  <Input
-                    id="category"
-                    placeholder="e.g., Technology, Music, Business"
-                    className="mt-2"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="tags" className="text-sm font-medium">
-                    Tags
-                  </Label>
-                  <Input
-                    id="tags"
-                    placeholder="Add relevant tags (separated by commas)"
-                    className="mt-2"
-                  />
-                </div>
+                <label className="text-sm font-medium mb-2 block">
+                  Category
+                </label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="conference">Conference</SelectItem>
+                    <SelectItem value="meetup">Meetup</SelectItem>
+                    <SelectItem value="workshop">Workshop</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
 
           {/* Date & Location */}
-          <Card className="card-elevated">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
                 <MapPin className="h-5 w-5 mr-2 text-primary" />
@@ -91,51 +131,39 @@ export default function EventCreationForm() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="start-date" className="text-sm font-medium">
-                    Start Date & Time *
-                  </Label>
-                  <Input
-                    id="start-date"
-                    type="datetime-local"
-                    className="mt-2"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="end-date" className="text-sm font-medium">
-                    End Date & Time *
-                  </Label>
-                  <Input id="end-date" type="datetime-local" className="mt-2" />
-                </div>
-              </div>
-
               <div>
-                <Label htmlFor="venue" className="text-sm font-medium">
-                  Venue Name *
-                </Label>
+                <label className="text-sm font-medium">Start Date</label>
                 <Input
-                  id="venue"
-                  placeholder="Enter venue name"
-                  className="mt-2"
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
                 />
               </div>
 
               <div>
-                <Label htmlFor="address" className="text-sm font-medium">
-                  Address *
-                </Label>
+                <label className="text-sm font-medium">End Date</label>
                 <Input
-                  id="address"
-                  placeholder="Enter full address"
-                  className="mt-2"
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
                 />
               </div>
+
+              <Input
+                placeholder="Venue"
+                value={venue}
+                onChange={(e) => setVenue(e.target.value)}
+              />
+              <Input
+                placeholder="Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
             </CardContent>
           </Card>
 
-          {/* Ticket Information */}
-          <Card className="card-elevated">
+          {/* Tickets */}
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Tag className="h-5 w-5 mr-2 text-primary" />
@@ -143,140 +171,118 @@ export default function EventCreationForm() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* General Admission */}
-              <div className="border rounded-lg p-6 space-y-4">
-                <h4 className="font-medium text-lg">General Admission</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {tickets.map((ticket, index) => (
+                <div
+                  key={index}
+                  className="border rounded-lg p-6 space-y-4 relative"
+                >
+                  <div className="flex justify-end items-center">
+                    {tickets.length > 1 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeTicket(index)}
+                      >
+                        <Trash className="h-4 w-4 text-red-500" />
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Ticket Name on its own line */}
                   <div>
-                    <Label
-                      htmlFor="general-price"
-                      className="text-sm font-medium"
-                    >
-                      Price ($)
-                    </Label>
+                    <label className="text-sm font-medium">Ticket Name</label>
                     <Input
-                      id="general-price"
-                      type="number"
-                      placeholder="0.00"
+                      placeholder="Ticket Name"
+                      value={ticket.name}
+                      onChange={(e) =>
+                        handleTicketChange(index, "name", e.target.value)
+                      }
                       className="mt-2"
                     />
                   </div>
-                  <div>
-                    <Label
-                      htmlFor="general-quantity"
-                      className="text-sm font-medium"
-                    >
-                      Quantity Available
-                    </Label>
-                    <Input
-                      id="general-quantity"
-                      type="number"
-                      placeholder="100"
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="general-sales-start"
-                      className="text-sm font-medium"
-                    >
-                      Sales Start Date
-                    </Label>
-                    <Input
-                      id="general-sales-start"
-                      type="datetime-local"
-                      className="mt-2"
-                    />
+
+                  {/* Other fields in grid 3 per line */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Price ($)</label>
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={ticket.price}
+                        onChange={(e) =>
+                          handleTicketChange(
+                            index,
+                            "price",
+                            Number(e.target.value),
+                          )
+                        }
+                        className="mt-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium">Quantity</label>
+                      <Input
+                        type="number"
+                        placeholder="100"
+                        value={ticket.capacity ?? ""}
+                        onChange={(e) =>
+                          handleTicketChange(
+                            index,
+                            "capacity",
+                            Number(e.target.value),
+                          )
+                        }
+                        className="mt-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium">Sales Start</label>
+                      <Input
+                        type="datetime-local"
+                        value={ticket.opening_start}
+                        onChange={(e) =>
+                          handleTicketChange(
+                            index,
+                            "opening_start",
+                            e.target.value,
+                          )
+                        }
+                        className="mt-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium">Sales End</label>
+                      <Input
+                        type="datetime-local"
+                        value={ticket.opening_end}
+                        onChange={(e) =>
+                          handleTicketChange(
+                            index,
+                            "opening_end",
+                            e.target.value,
+                          )
+                        }
+                        className="mt-2"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
 
-              {/* VIP Tickets */}
-              <div className="border rounded-lg p-6 space-y-4">
-                <h4 className="font-medium text-lg">VIP Experience</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label htmlFor="vip-price" className="text-sm font-medium">
-                      Price ($)
-                    </Label>
-                    <Input
-                      id="vip-price"
-                      type="number"
-                      placeholder="0.00"
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="vip-quantity"
-                      className="text-sm font-medium"
-                    >
-                      Quantity Available
-                    </Label>
-                    <Input
-                      id="vip-quantity"
-                      type="number"
-                      placeholder="50"
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="vip-sales-start"
-                      className="text-sm font-medium"
-                    >
-                      Sales Start Date
-                    </Label>
-                    <Input
-                      id="vip-sales-start"
-                      type="datetime-local"
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Button variant="outline" className="w-full">
-                + Add Another Ticket Category
+              <Button type="button" variant="outline" onClick={addTicket}>
+                + Add Another Ticket
               </Button>
             </CardContent>
           </Card>
 
-          {/* Event Image */}
-          <Card className="card-elevated">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Image className="h-5 w-5 mr-2 text-primary" />
-                Event Banner
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                <Image className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground mb-4">
-                  Upload a high-quality banner image for your event
-                </p>
-                <Button variant="outline">Choose Image</Button>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Recommended: 1200x600px, JPG or PNG, max 5MB
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Action Buttons */}
-          <div className="flex items-center justify-between pt-6">
-            <Button variant="outline" size="lg">
-              Save as Draft
+          {/* Submit */}
+          <div className="flex justify-end">
+            <Button type="submit" className="btn-hero" size="lg">
+              Create Event
             </Button>
-            <div className="flex gap-4">
-              <Button variant="outline" size="lg">
-                Preview Event
-              </Button>
-              <Button className="btn-hero" size="lg">
-                Publish Event
-              </Button>
-            </div>
           </div>
         </form>
       </div>

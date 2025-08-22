@@ -158,18 +158,6 @@ export default function EventDiscovery() {
                 </Button>
               ))}
             </div>
-
-            <div className="flex items-center gap-3">
-              <Button variant="outline" size="icon">
-                <Filter className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon">
-                <Grid className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon">
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
 
           {/* Results Header */}
@@ -177,12 +165,6 @@ export default function EventDiscovery() {
             <h2 className="text-2xl font-semibold">
               Showing {mockEvents.length} events
             </h2>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              Sort by:
-              <Button variant="ghost" className="font-medium">
-                Relevance
-              </Button>
-            </div>
           </div>
 
           {/* Events Grid */}
@@ -190,13 +172,6 @@ export default function EventDiscovery() {
             {mockEvents.map((event, index) => (
               <EventCard key={index} {...event} />
             ))}
-          </div>
-
-          {/* Load More */}
-          <div className="text-center mt-12">
-            <Button variant="outline" className="px-8 py-3">
-              Load More Events
-            </Button>
           </div>
         </div>
       </section>
