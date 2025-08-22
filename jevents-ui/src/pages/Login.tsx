@@ -29,10 +29,8 @@ export default function Login() {
     e.preventDefault();
 
     const body: LoginRequest = {
-      user: {
-        email: email,
-        password: password,
-      },
+      email: email,
+      password: password,
     };
 
     try {
