@@ -98,7 +98,7 @@ export default function EventDetail() {
 
       const newQuantity = Math.max(
         0,
-        Math.min(maxQuantity, currentQuantity + change),
+        Math.min(maxQuantity, currentQuantity + change)
       );
 
       if (newQuantity === 0) {
@@ -117,18 +117,18 @@ export default function EventDetail() {
     return Object.entries(selectedTickets).reduce(
       (total, [categoryId, quantity]) => {
         const category = event.ticketCategories.find(
-          (c) => c.id === categoryId,
+          (c) => c.id === categoryId
         );
         return total + (category?.price || 0) * quantity;
       },
-      0,
+      0
     );
   };
 
   const getTotalTickets = () => {
     return Object.values(selectedTickets).reduce(
       (total, quantity) => total + quantity,
-      0,
+      0
     );
   };
 
@@ -139,6 +139,46 @@ export default function EventDetail() {
       month: "long",
       day: "numeric",
     });
+  };
+
+  const handlePayment = () => {
+    const totalAmountInPaise = getTotalAmount() * 100; // Razorpay amount is in paise
+
+    console.log("here");
+
+    const options = {
+      key: "rzp_test_R8SxN8FrDdN8KF", // Replace with your Razorpay key ID
+      amount: totalAmountInPaise,
+      currency: "INR",
+      name: event.title,
+      description: "Ticket Booking",
+      image: event.image, // You can add your logo here
+      handler: function (response: any) {
+        console.log(response);
+        alert(
+          `Payment successful! Payment ID: ${response.razorpay_payment_id}`
+        );
+        // You can redirect or update your state here after successful payment
+        setIsBookingModalOpen(false);
+        setSelectedTickets({});
+      },
+      prefill: {
+        // Optionally, prefill user info
+        name: "John Doe",
+        email: "john.doe@example.com",
+        contact: "9999999999",
+      },
+      notes: {
+        eventId: event.id,
+        tickets: JSON.stringify(selectedTickets),
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   return (
@@ -337,7 +377,7 @@ export default function EventDetail() {
                 {Object.entries(selectedTickets).map(
                   ([categoryId, quantity]) => {
                     const category = event.ticketCategories.find(
-                      (c) => c.id === categoryId,
+                      (c) => c.id === categoryId
                     );
                     return (
                       <div key={categoryId} className="flex justify-between">
@@ -347,7 +387,7 @@ export default function EventDetail() {
                         <span>${(category?.price || 0) * quantity}</span>
                       </div>
                     );
-                  },
+                  }
                 )}
               </div>
               <Separator />
@@ -363,7 +403,9 @@ export default function EventDetail() {
                 >
                   Cancel
                 </Button>
-                <Button className="flex-1">Proceed to Payment</Button>
+                <Button className="flex-1" onClick={handlePayment}>
+                  Proceed to Payment
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -372,4 +414,3 @@ export default function EventDetail() {
     </div>
   );
 }
-
