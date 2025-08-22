@@ -1,4 +1,12 @@
-import { Search, Filter, Calendar, MapPin, Star, Grid, List } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Calendar,
+  MapPin,
+  Star,
+  Grid,
+  List,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import EventCard from "./EventCard";
@@ -7,7 +15,8 @@ export default function EventDiscovery() {
   const mockEvents = [
     {
       title: "Tech Innovation Conference 2024",
-      description: "Join industry leaders for cutting-edge discussions on AI, blockchain, and the future of technology. Network with 500+ professionals.",
+      description:
+        "Join industry leaders for cutting-edge discussions on AI, blockchain, and the future of technology. Network with 500+ professionals.",
       date: "March 15, 2024",
       location: "San Francisco, CA",
       price: "$299",
@@ -15,11 +24,12 @@ export default function EventDiscovery() {
       attendees: 487,
       rating: 4.9,
       image: "/api/placeholder/400/300",
-      category: "Technology"
+      category: "Technology",
     },
     {
       title: "Summer Music Festival",
-      description: "Three days of incredible live music featuring top artists from around the world. Food trucks, art installations, and more.",
+      description:
+        "Three days of incredible live music featuring top artists from around the world. Food trucks, art installations, and more.",
       date: "June 21-23, 2024",
       location: "Austin, TX",
       price: "$149",
@@ -27,11 +37,12 @@ export default function EventDiscovery() {
       attendees: 2340,
       rating: 4.8,
       image: "/api/placeholder/400/300",
-      category: "Music"
+      category: "Music",
     },
     {
       title: "Digital Marketing Workshop",
-      description: "Learn the latest digital marketing strategies from industry experts. Hands-on sessions and practical takeaways included.",
+      description:
+        "Learn the latest digital marketing strategies from industry experts. Hands-on sessions and practical takeaways included.",
       date: "April 8, 2024",
       location: "New York, NY",
       price: "$89",
@@ -39,11 +50,12 @@ export default function EventDiscovery() {
       attendees: 156,
       rating: 4.7,
       image: "/api/placeholder/400/300",
-      category: "Business"
+      category: "Business",
     },
     {
       title: "Art & Design Exhibition",
-      description: "Explore contemporary art and design from emerging and established artists. Opening reception with wine and networking.",
+      description:
+        "Explore contemporary art and design from emerging and established artists. Opening reception with wine and networking.",
       date: "March 28, 2024",
       location: "Los Angeles, CA",
       price: "$25",
@@ -51,11 +63,12 @@ export default function EventDiscovery() {
       attendees: 234,
       rating: 4.6,
       image: "/api/placeholder/400/300",
-      category: "Arts"
+      category: "Arts",
     },
     {
       title: "Startup Pitch Competition",
-      description: "Watch innovative startups pitch to investors and compete for $100k in funding. Network with entrepreneurs and VCs.",
+      description:
+        "Watch innovative startups pitch to investors and compete for $100k in funding. Network with entrepreneurs and VCs.",
       date: "May 12, 2024",
       location: "Seattle, WA",
       price: "Free",
@@ -63,11 +76,12 @@ export default function EventDiscovery() {
       attendees: 345,
       rating: 4.8,
       image: "/api/placeholder/400/300",
-      category: "Business"
+      category: "Business",
     },
     {
       title: "Food & Wine Festival",
-      description: "Taste exceptional cuisine from renowned chefs paired with premium wines. Cooking demonstrations and tastings all day.",
+      description:
+        "Taste exceptional cuisine from renowned chefs paired with premium wines. Cooking demonstrations and tastings all day.",
       date: "July 14, 2024",
       location: "Napa Valley, CA",
       price: "$199",
@@ -75,11 +89,20 @@ export default function EventDiscovery() {
       attendees: 567,
       rating: 4.9,
       image: "/api/placeholder/400/300",
-      category: "Food & Drink"
-    }
+      category: "Food & Drink",
+    },
   ];
 
-  const categories = ["All", "Technology", "Music", "Business", "Arts", "Food & Drink", "Sports", "Education"];
+  const categories = [
+    "All",
+    "Technology",
+    "Music",
+    "Business",
+    "Arts",
+    "Food & Drink",
+    "Sports",
+    "Education",
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,7 +122,7 @@ export default function EventDiscovery() {
               <div className="flex flex-col md:flex-row gap-2">
                 <div className="flex-1 flex items-center">
                   <Search className="h-5 w-5 text-muted-foreground ml-4 mr-2" />
-                  <Input 
+                  <Input
                     placeholder="Search events, organizers, or keywords..."
                     className="border-0 text-lg focus-visible:ring-0"
                   />
@@ -111,9 +134,7 @@ export default function EventDiscovery() {
                   <Button variant="outline" size="icon" className="h-12 w-12">
                     <Calendar className="h-5 w-5" />
                   </Button>
-                  <Button className="btn-hero h-12 px-8">
-                    Search Events
-                  </Button>
+                  <Button className="btn-hero h-12 px-8">Search Events</Button>
                 </div>
               </div>
             </div>
@@ -137,7 +158,7 @@ export default function EventDiscovery() {
                 </Button>
               ))}
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />

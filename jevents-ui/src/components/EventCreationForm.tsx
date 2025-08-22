@@ -1,4 +1,12 @@
-import { Calendar, MapPin, DollarSign, Users, Image, Clock, Tag } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  DollarSign,
+  Users,
+  Image,
+  Clock,
+  Tag,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +20,8 @@ export default function EventCreationForm() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Create New Event</h1>
           <p className="text-muted-foreground">
-            Fill out the details below to create your event and start selling tickets
+            Fill out the details below to create your event and start selling
+            tickets
           </p>
         </div>
 
@@ -30,7 +39,7 @@ export default function EventCreationForm() {
                 <Label htmlFor="title" className="text-sm font-medium">
                   Event Title *
                 </Label>
-                <Input 
+                <Input
                   id="title"
                   placeholder="Enter your event title"
                   className="mt-2"
@@ -41,7 +50,7 @@ export default function EventCreationForm() {
                 <Label htmlFor="description" className="text-sm font-medium">
                   Event Description *
                 </Label>
-                <Textarea 
+                <Textarea
                   id="description"
                   placeholder="Describe what makes your event special..."
                   className="mt-2 min-h-[120px]"
@@ -53,7 +62,7 @@ export default function EventCreationForm() {
                   <Label htmlFor="category" className="text-sm font-medium">
                     Category *
                   </Label>
-                  <Input 
+                  <Input
                     id="category"
                     placeholder="e.g., Technology, Music, Business"
                     className="mt-2"
@@ -63,7 +72,7 @@ export default function EventCreationForm() {
                   <Label htmlFor="tags" className="text-sm font-medium">
                     Tags
                   </Label>
-                  <Input 
+                  <Input
                     id="tags"
                     placeholder="Add relevant tags (separated by commas)"
                     className="mt-2"
@@ -87,7 +96,7 @@ export default function EventCreationForm() {
                   <Label htmlFor="start-date" className="text-sm font-medium">
                     Start Date & Time *
                   </Label>
-                  <Input 
+                  <Input
                     id="start-date"
                     type="datetime-local"
                     className="mt-2"
@@ -97,11 +106,7 @@ export default function EventCreationForm() {
                   <Label htmlFor="end-date" className="text-sm font-medium">
                     End Date & Time *
                   </Label>
-                  <Input 
-                    id="end-date"
-                    type="datetime-local"
-                    className="mt-2"
-                  />
+                  <Input id="end-date" type="datetime-local" className="mt-2" />
                 </div>
               </div>
 
@@ -109,7 +114,7 @@ export default function EventCreationForm() {
                 <Label htmlFor="venue" className="text-sm font-medium">
                   Venue Name *
                 </Label>
-                <Input 
+                <Input
                   id="venue"
                   placeholder="Enter venue name"
                   className="mt-2"
@@ -120,7 +125,7 @@ export default function EventCreationForm() {
                 <Label htmlFor="address" className="text-sm font-medium">
                   Address *
                 </Label>
-                <Input 
+                <Input
                   id="address"
                   placeholder="Enter full address"
                   className="mt-2"
@@ -143,10 +148,13 @@ export default function EventCreationForm() {
                 <h4 className="font-medium text-lg">General Admission</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="general-price" className="text-sm font-medium">
+                    <Label
+                      htmlFor="general-price"
+                      className="text-sm font-medium"
+                    >
                       Price ($)
                     </Label>
-                    <Input 
+                    <Input
                       id="general-price"
                       type="number"
                       placeholder="0.00"
@@ -154,10 +162,13 @@ export default function EventCreationForm() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="general-quantity" className="text-sm font-medium">
+                    <Label
+                      htmlFor="general-quantity"
+                      className="text-sm font-medium"
+                    >
                       Quantity Available
                     </Label>
-                    <Input 
+                    <Input
                       id="general-quantity"
                       type="number"
                       placeholder="100"
@@ -165,10 +176,13 @@ export default function EventCreationForm() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="general-sales-start" className="text-sm font-medium">
+                    <Label
+                      htmlFor="general-sales-start"
+                      className="text-sm font-medium"
+                    >
                       Sales Start Date
                     </Label>
-                    <Input 
+                    <Input
                       id="general-sales-start"
                       type="datetime-local"
                       className="mt-2"
@@ -185,7 +199,7 @@ export default function EventCreationForm() {
                     <Label htmlFor="vip-price" className="text-sm font-medium">
                       Price ($)
                     </Label>
-                    <Input 
+                    <Input
                       id="vip-price"
                       type="number"
                       placeholder="0.00"
@@ -193,10 +207,13 @@ export default function EventCreationForm() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="vip-quantity" className="text-sm font-medium">
+                    <Label
+                      htmlFor="vip-quantity"
+                      className="text-sm font-medium"
+                    >
                       Quantity Available
                     </Label>
-                    <Input 
+                    <Input
                       id="vip-quantity"
                       type="number"
                       placeholder="50"
@@ -204,10 +221,13 @@ export default function EventCreationForm() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="vip-sales-start" className="text-sm font-medium">
+                    <Label
+                      htmlFor="vip-sales-start"
+                      className="text-sm font-medium"
+                    >
                       Sales Start Date
                     </Label>
-                    <Input 
+                    <Input
                       id="vip-sales-start"
                       type="datetime-local"
                       className="mt-2"
@@ -236,9 +256,7 @@ export default function EventCreationForm() {
                 <p className="text-muted-foreground mb-4">
                   Upload a high-quality banner image for your event
                 </p>
-                <Button variant="outline">
-                  Choose Image
-                </Button>
+                <Button variant="outline">Choose Image</Button>
                 <p className="text-sm text-muted-foreground mt-2">
                   Recommended: 1200x600px, JPG or PNG, max 5MB
                 </p>
