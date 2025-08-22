@@ -10,7 +10,43 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_22_135811) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_22_154203) do
+  create_table "event_organizers", force: :cascade do |t|
+    t.integer "event_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_event_organizers_on_event_id"
+    t.index ["user_id"], name: "index_event_organizers_on_user_id"
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.string "location"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer "capacity"
+    t.string "status"
+    t.integer "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tickets", force: :cascade do |t|
+    t.string "name"
+    t.integer "event_id", null: false
+    t.integer "user_id", null: false
+    t.decimal "price"
+    t.integer "status"
+    t.datetime "opening_start"
+    t.datetime "opening_end"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_tickets_on_event_id"
+    t.index ["user_id"], name: "index_tickets_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "password_digest"
@@ -20,4 +56,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_135811) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email"
   end
+
+  add_foreign_key "event_organizers", "events"
+  add_foreign_key "event_organizers", "users"
+  add_foreign_key "tickets", "events"
+  add_foreign_key "tickets", "users"
 end
