@@ -18,7 +18,10 @@ Rails.application.routes.draw do
       end
     end
   end
-  
-  resources :orders, only: [:index, :show, :create, :update]
+  resources :orders, only: [:index, :show, :create, :update] do
+    collection do
+      get :stats   
+    end
+  end
   resources :payments, only: [:create, :update]
 end
