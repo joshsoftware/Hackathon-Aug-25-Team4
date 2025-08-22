@@ -9,8 +9,12 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <Calendar className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold gradient-text">EventHub</span>
+              <Link to="/" className="flex gap-2">
+                <Calendar className="h-8 w-8 text-primary" />
+                <span className="text-xl font-bold gradient-text">
+                  EventHub
+                </span>
+              </Link>
             </div>
           </div>
 
@@ -49,7 +53,7 @@ export default function Header() {
               Login
             </Link>
 
-            <Link to="/login">Sign Up</Link>
+            <Link to="/signup">Sign Up</Link>
 
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="h-6 w-6" />
@@ -60,4 +64,3 @@ export default function Header() {
     </header>
   );
 }
-

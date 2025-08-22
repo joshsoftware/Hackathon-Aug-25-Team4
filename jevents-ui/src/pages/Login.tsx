@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 
 export default function Login() {
@@ -22,8 +21,10 @@ export default function Login() {
         {/* Logo */}
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center space-x-2">
-            <Calendar className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold gradient-text">EventHub</span>
+            <Link to="/" className="flex gap-2">
+              <Calendar className="h-8 w-8 text-primary" />
+              <span className="text-2xl font-bold gradient-text">EventHub</span>
+            </Link>
           </div>
         </div>
 
@@ -74,16 +75,6 @@ export default function Login() {
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <input
-                    id="remember"
-                    type="checkbox"
-                    className="rounded border-input text-primary focus:ring-primary"
-                  />
-                  <Label htmlFor="remember" className="text-sm">
-                    Remember me
-                  </Label>
-                </div>
                 <a
                   href="#"
                   className="text-sm text-primary hover:text-primary/80 transition-smooth"
@@ -113,4 +104,3 @@ export default function Login() {
     </div>
   );
 }
-

@@ -1,5 +1,6 @@
 import { Calendar, MapPin, Users, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface EventCardProps {
   title: string;
@@ -24,7 +25,7 @@ export default function EventCard({
   attendees,
   rating,
   image,
-  category
+  category,
 }: EventCardProps) {
   return (
     <div className="event-card cursor-pointer group">
@@ -33,7 +34,7 @@ export default function EventCard({
           <Calendar className="h-12 w-12 text-primary/60" />
         </div>
       </div>
-      
+
       <div className="flex items-center justify-between mb-3">
         <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
           {category}
@@ -47,7 +48,7 @@ export default function EventCard({
       <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
         {title}
       </h3>
-      
+
       <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
         {description}
       </p>
@@ -72,10 +73,11 @@ export default function EventCard({
           <p className="text-sm text-muted-foreground">From</p>
           <p className="text-xl font-bold text-primary">{price}</p>
         </div>
-        <Button className="btn-accent">
-          View Details
-        </Button>
+        <Link to="/event/:id">
+          <Button className="btn-accent">View Details</Button>
+        </Link>
       </div>
     </div>
   );
 }
+
