@@ -51,6 +51,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_204110) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "event_id", null: false
+    t.bigint "coupon_id"
+    t.decimal "total_amount", precision: 10, scale: 2
+    t.decimal "discount_applied", precision: 10, scale: 2, default: "0.0"
+    t.decimal "final_amount", precision: 10, scale: 2
+    t.integer "payment_status", limit: 20
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["coupon_id"], name: "index_orders_on_coupon_id"
+    t.index ["event_id"], name: "index_orders_on_event_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.integer "method", limit: 50
+    t.string "transaction_id", limit: 100
+    t.decimal "amount", precision: 10, scale: 2
+    t.integer "status", limit: 20
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_payments_on_order_id"
+  end
+
   create_table "tickets", force: :cascade do |t|
     t.string "name"
     t.integer "event_id", null: false
@@ -79,6 +105,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_204110) do
   add_foreign_key "coupons", "users"
   add_foreign_key "event_organizers", "events"
   add_foreign_key "event_organizers", "users"
+  add_foreign_key "orders", "coupons"
+  add_foreign_key "orders", "events"
+  add_foreign_key "orders", "users"
+  add_foreign_key "payments", "orders"
   add_foreign_key "tickets", "events"
   add_foreign_key "tickets", "users"
 end
