@@ -7,7 +7,7 @@ class EventsController < ApplicationController
 			# Build tickets if provided
 			if params[:tickets].present?
 				params[:tickets].each do |ticket_param|
-					@event.tickets.build(ticket_param.permit(:name, :user_id, :price, :status, :opening_start, :opening_end))
+					@event.tickets.build(ticket_param.merge!(user_id: current_user.id).permit(:name, :price, :user_id, :status, :capacity, :opening_start, :opening_end))
 				end
 			end
 
@@ -30,9 +30,9 @@ class EventsController < ApplicationController
 			:location,
 			:start_time,
 			:end_time,
-			:capacity,
-			:category
-		)
+			:category, 
+    tickets_attributes: [:id, :name, :price, :status, :user_id, :capacity, :opening_start, :opening_end, :_destroy]
+  )
 	end
 end
   
