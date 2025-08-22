@@ -2,7 +2,7 @@ class EventsController < ApplicationController
   # POST /events
   def create
     ActiveRecord::Base.transaction do
-			debugger
+			# debugger
       @event = Event.new(event_params)
 
       # Attach event image if provided
