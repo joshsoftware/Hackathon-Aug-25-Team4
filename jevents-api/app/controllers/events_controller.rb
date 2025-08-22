@@ -7,13 +7,26 @@ class EventsController < ApplicationController
       # Build tickets if provided
       if params[:tickets].present?
         params[:tickets].each do |ticket_param|
-          @event.tickets.build(ticket_param.merge!(user_id: current_user.id).permit(:name, :price, :user_id, :status, :capacity, :opening_start, :opening_end))
+          @event.tickets.build(
+            ticket_param
+              .merge!(user_id: current_user.id)
+              .permit(:name, :price, :user_id, :status, :capacity, :opening_start, :opening_end)
+          )
         end
       end
 
+      # Attach image if uploaded
+      if params[:event][:image].present?
+        @event.image.attach(params[:event][:image])
+      end
+
       if @event.save
-				@event.organizers << current_user
-        render json: @event.as_json(include: :tickets), status: :created
+        @event.organizers << current_user
+
+        render json: @event.as_json(
+          include: :tickets,
+          methods: [:image_url]
+        ), status: :created
       else
         render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
       end
@@ -32,7 +45,10 @@ class EventsController < ApplicationController
       :start_time,
       :end_time,
       :category,
-    tickets_attributes: [ :id, :name, :price, :status, :user_id, :capacity, :opening_start, :opening_end, :_destroy ]
-  )
+      tickets_attributes: [
+        :id, :name, :price, :status, :user_id,
+        :capacity, :opening_start, :opening_end, :_destroy
+      ]
+    )
   end
 end
