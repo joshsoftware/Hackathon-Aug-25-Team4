@@ -1,5 +1,6 @@
 import { Calendar, Menu, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   return (
@@ -14,27 +15,42 @@ export default function Header() {
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a
+              href="/"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Home
             </a>
-            <a href="/events" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a
+              href="/events"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Events
             </a>
-            <a href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a
+              href="/dashboard"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Dashboard
             </a>
-            <a href="/organizer" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a
+              href="/organizer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               For Organizers
             </a>
           </nav>
 
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+            <Link
+              to="/login"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Login
-            </Button>
-            <Button className="btn-hero">
-              Sign Up
-            </Button>
+            </Link>
+
+            <Link to="/login">Sign Up</Link>
+
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="h-6 w-6" />
             </Button>
@@ -44,3 +60,4 @@ export default function Header() {
     </header>
   );
 }
+
