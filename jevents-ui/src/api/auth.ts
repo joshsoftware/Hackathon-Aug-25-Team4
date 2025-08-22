@@ -1,3 +1,4 @@
+import { axiosPublic } from "@/axios/instance";
 import {
   LoginRequest,
   LoginResponse,
@@ -6,25 +7,13 @@ import {
 } from "@/types/auth";
 
 export const login = async (body: LoginRequest): Promise<LoginResponse> => {
-  return {
-    token: "hello",
-    user: {
-      id: 1,
-      name: "",
-      email: "hi",
-      role: "organizer",
-    },
-  };
+  return axiosPublic
+    .post<LoginResponse>("/auth/login", body)
+    .then((res) => res.data);
 };
 
 export const signup = async (body: SignUpRequest): Promise<SignUpResponse> => {
-  return {
-    token: "hello",
-    user: {
-      id: 1,
-      name: "",
-      email: "hi",
-      role: "",
-    },
-  };
+  return axiosPublic
+    .post<SignUpResponse>("/users", body)
+    .then((res) => res.data);
 };

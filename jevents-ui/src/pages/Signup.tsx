@@ -54,7 +54,7 @@ export default function Signup() {
     const body: SignUpRequest = {
       user: {
         name: formData.name,
-        email: formData.name,
+        email: formData.email,
         password: formData.password,
         password_confirmation: formData.password_confirmation,
         role: formData.role,
