@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Calendar, MapPin, Tag, Trash } from "lucide-react";
+import { Calendar, MapPin, Tag, Trash, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { axiosPrivate } from "@/axios/instance";
-import { CreateEventRequest, Ticket } from "@/types/events";
+import { Ticket } from "@/types/events";
 import {
   Select,
   SelectContent,
@@ -22,6 +22,7 @@ export default function EventCreationForm() {
   const [endDate, setEndDate] = useState("");
   const [venue, setVenue] = useState("");
   const [address, setAddress] = useState("");
+  const [image, setImage] = useState<File | null>(null);
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
 
@@ -53,23 +54,33 @@ export default function EventCreationForm() {
     setTickets(tickets.filter((_, i) => i !== index));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const payload: CreateEventRequest = {
-      event: {
-        title,
-        description,
-        category,
-        start_time: startDate,
-        end_time: endDate,
-        location: `${venue}, ${address}`,
-      },
-      tickets,
-    };
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("category", category);
+    formData.append("start_time", startDate);
+    formData.append("end_time", endDate);
+    formData.append("location", `${venue}, ${address}`);
+
+    if (image) {
+      formData.append("image", image);
+    }
+
+    formData.append("tickets", JSON.stringify(tickets));
 
     try {
-      const res = await axiosPrivate.post("/events", payload);
+      const res = await axiosPrivate.post("/events", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       console.log("Event created:", res.data);
     } catch (err) {
       console.error("Error creating event:", err);
@@ -121,7 +132,6 @@ export default function EventCreationForm() {
               </div>
             </CardContent>
           </Card>
-
           {/* Date & Location */}
           <Card>
             <CardHeader>
@@ -161,7 +171,6 @@ export default function EventCreationForm() {
               />
             </CardContent>
           </Card>
-
           {/* Tickets */}
           <Card>
             <CardHeader>
@@ -275,6 +284,38 @@ export default function EventCreationForm() {
               <Button type="button" variant="outline" onClick={addTicket}>
                 + Add Another Ticket
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Event Image */}
+          <Card className="card-elevated">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Image className="h-5 w-5 mr-2 text-primary" /> Event Banner
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="event-image-upload"
+                />
+                <label
+                  htmlFor="event-image-upload"
+                  className="cursor-pointer flex flex-col items-center"
+                >
+                  <Image className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground mb-2">
+                    {image ? image.name : "Upload a high-quality banner image"}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Recommended: 1200x600px, JPG or PNG, max 5MB
+                  </p>
+                </label>
+              </div>
             </CardContent>
           </Card>
 

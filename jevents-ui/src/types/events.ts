@@ -10,6 +10,7 @@ export interface Event {
   start_time: string;
   end_time: string;
   category: string;
+  image?: File | null;
 }
 
 export interface Ticket {
