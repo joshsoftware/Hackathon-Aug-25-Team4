@@ -9,6 +9,7 @@ import {
   BarChart3,
   CreditCard,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const featuredEvents = [
@@ -104,10 +105,12 @@ const Index = () => {
           </div>
 
           <div className="text-center">
-            <Button className="btn-hero text-lg px-8 py-4">
-              View All Events
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/events">
+              <Button className="btn-hero text-lg px-8 py-4">
+                View All Events
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

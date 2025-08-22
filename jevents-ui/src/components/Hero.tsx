@@ -1,5 +1,6 @@
 import { ArrowRight, Calendar, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -17,16 +18,21 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <Button className="btn-hero text-lg px-8 py-4">
-              Start Creating Events
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              variant="outline"
-              className="text-lg px-8 py-4 bg-background/80"
-            >
-              Explore Events
-            </Button>
+            <Link to="/create-event">
+              <Button className="btn-hero text-lg px-8 py-4">
+                Start Creating Events
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+
+            <Link to="/events">
+              <Button
+                variant="outline"
+                className="text-lg px-8 py-4 bg-background/80"
+              >
+                Explore Events
+              </Button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto slide-up">
