@@ -84,7 +84,7 @@ export default function Signup() {
           <div className="flex items-center space-x-2">
             <Link to="/" className="flex gap-2">
               <Calendar className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold gradient-text">EventHub</span>
+              <span className="text-2xl font-bold gradient-text">JEvents</span>
             </Link>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function Signup() {
               Create Account
             </CardTitle>
             <CardDescription>
-              Join EventHub to discover amazing events and manage your bookings
+              Join JEvents to discover amazing events and manage your bookings
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
