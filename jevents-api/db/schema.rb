@@ -10,7 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_22_154203) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_22_204110) do
+  create_table "coupons", force: :cascade do |t|
+    t.integer "event_id", null: false
+    t.integer "user_id", null: false
+    t.string "code", null: false
+    t.decimal "discount_value", null: false
+    t.string "discount_type", null: false
+    t.integer "usage_limit"
+    t.integer "used_count", default: 0
+    t.datetime "valid_from"
+    t.datetime "valid_until"
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id", "code"], name: "index_coupons_on_event_id_and_code", unique: true
+    t.index ["event_id"], name: "index_coupons_on_event_id"
+    t.index ["user_id"], name: "index_coupons_on_user_id"
+  end
+
   create_table "event_organizers", force: :cascade do |t|
     t.integer "event_id", null: false
     t.integer "user_id", null: false
@@ -27,7 +45,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_154203) do
     t.datetime "start_time"
     t.datetime "end_time"
     t.integer "capacity"
-    t.string "status"
+    t.integer "status", default: 0
     t.integer "category"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -57,6 +75,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_154203) do
     t.index ["email"], name: "index_users_on_email"
   end
 
+  add_foreign_key "coupons", "events"
+  add_foreign_key "coupons", "users"
   add_foreign_key "event_organizers", "events"
   add_foreign_key "event_organizers", "users"
   add_foreign_key "tickets", "events"

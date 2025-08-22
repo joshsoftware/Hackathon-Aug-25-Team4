@@ -9,4 +9,12 @@ Rails.application.routes.draw do
   resources :users, only: [ :create ]
   # get "users/create", to: "users#create"
   resources :events, only: [:create]
+
+  resources :events do
+    resources :coupons, only: [:index, :create, :update, :destroy] do
+      collection do
+        post :apply   # POST /events/:event_id/coupons/apply
+      end
+    end
+  end
 end
