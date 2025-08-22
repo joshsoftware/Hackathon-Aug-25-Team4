@@ -7,14 +7,13 @@ export default function Hero() {
       <div className="container mx-auto">
         <div className="max-w-4xl mx-auto text-center fade-in">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            Create Amazing{" "}
-            <span className="gradient-text">Events</span>{" "}
-            That People Love
+            Create Amazing <span className="gradient-text">Events</span> That
+            People Love
           </h1>
-          
+
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            The complete event management platform for organizers and event-goers. 
-            Create, manage, and discover extraordinary experiences.
+            The complete event management platform for organizers and
+            event-goers. Create, manage, and discover extraordinary experiences.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
@@ -22,7 +21,10 @@ export default function Hero() {
               Start Creating Events
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button variant="outline" className="text-lg px-8 py-4 bg-background/80">
+            <Button
+              variant="outline"
+              className="text-lg px-8 py-4 bg-background/80"
+            >
               Explore Events
             </Button>
           </div>
@@ -37,7 +39,7 @@ export default function Hero() {
                 Create professional events in minutes with our intuitive builder
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Users className="h-6 w-6 text-accent" />
@@ -47,7 +49,7 @@ export default function Hero() {
                 Manage tickets, refunds, and notifications seamlessly
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Zap className="h-6 w-6 text-warning" />

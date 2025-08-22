@@ -14,27 +14,40 @@ export default function Header() {
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a
+              href="/"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Home
             </a>
-            <a href="/events" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a
+              href="/events"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Events
             </a>
-            <a href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a
+              href="/dashboard"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Dashboard
             </a>
-            <a href="/organizer" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a
+              href="/organizer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               For Organizers
             </a>
           </nav>
 
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Login
             </Button>
-            <Button className="btn-hero">
-              Sign Up
-            </Button>
+            <Button className="btn-hero">Sign Up</Button>
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="h-6 w-6" />
             </Button>

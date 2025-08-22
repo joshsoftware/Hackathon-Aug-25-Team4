@@ -2,13 +2,20 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import EventCard from "@/components/EventCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calendar, Users, BarChart3, CreditCard } from "lucide-react";
+import {
+  ArrowRight,
+  Calendar,
+  Users,
+  BarChart3,
+  CreditCard,
+} from "lucide-react";
 
 const Index = () => {
   const featuredEvents = [
     {
       title: "Tech Innovation Summit 2024",
-      description: "Join industry leaders and innovators for a day of cutting-edge technology discussions and networking opportunities.",
+      description:
+        "Join industry leaders and innovators for a day of cutting-edge technology discussions and networking opportunities.",
       date: "March 15, 2024",
       location: "San Francisco, CA",
       price: "$299",
@@ -16,11 +23,12 @@ const Index = () => {
       attendees: 487,
       rating: 4.9,
       image: "/api/placeholder/400/300",
-      category: "Technology"
+      category: "Technology",
     },
     {
       title: "Creative Arts Workshop",
-      description: "Explore your creative side with hands-on workshops led by professional artists and designers.",
+      description:
+        "Explore your creative side with hands-on workshops led by professional artists and designers.",
       date: "March 22, 2024",
       location: "New York, NY",
       price: "$89",
@@ -28,11 +36,12 @@ const Index = () => {
       attendees: 156,
       rating: 4.8,
       image: "/api/placeholder/400/300",
-      category: "Arts"
+      category: "Arts",
     },
     {
       title: "Startup Networking Event",
-      description: "Connect with entrepreneurs, investors, and innovators in the startup ecosystem.",
+      description:
+        "Connect with entrepreneurs, investors, and innovators in the startup ecosystem.",
       date: "April 5, 2024",
       location: "Austin, TX",
       price: "Free",
@@ -40,38 +49,42 @@ const Index = () => {
       attendees: 234,
       rating: 4.7,
       image: "/api/placeholder/400/300",
-      category: "Business"
-    }
+      category: "Business",
+    },
   ];
 
   const features = [
     {
       icon: Calendar,
       title: "Easy Event Creation",
-      description: "Create professional events in minutes with our intuitive event builder"
+      description:
+        "Create professional events in minutes with our intuitive event builder",
     },
     {
       icon: Users,
       title: "Audience Management",
-      description: "Manage attendees, send notifications, and track engagement seamlessly"
+      description:
+        "Manage attendees, send notifications, and track engagement seamlessly",
     },
     {
       icon: BarChart3,
       title: "Real-time Analytics",
-      description: "Track ticket sales, revenue, and event performance with detailed insights"
+      description:
+        "Track ticket sales, revenue, and event performance with detailed insights",
     },
     {
       icon: CreditCard,
       title: "Secure Payments",
-      description: "Accept payments with confidence using our secure payment processing"
-    }
+      description:
+        "Accept payments with confidence using our secure payment processing",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <Hero />
-      
+
       {/* Featured Events Section */}
       <section className="py-20 px-4 lg:px-6 bg-muted/20">
         <div className="container mx-auto">
@@ -108,8 +121,8 @@ const Index = () => {
               <span className="gradient-text">Amazing Events</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Our comprehensive platform provides all the tools you need to plan, 
-              manage, and execute successful events from start to finish
+              Our comprehensive platform provides all the tools you need to
+              plan, manage, and execute successful events from start to finish
             </p>
           </div>
 
@@ -136,15 +149,18 @@ const Index = () => {
             Ready to Create Your Next Event?
           </h2>
           <p className="text-xl text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-            Join thousands of event organizers who trust EventHub to bring their 
+            Join thousands of event organizers who trust EventHub to bring their
             vision to life and create memorable experiences
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4">
               Start Creating Events
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white/10 text-lg px-8 py-4">
+            <Button
+              variant="outline"
+              className="border-white text-white hover:bg-white/10 text-lg px-8 py-4"
+            >
               Learn More
             </Button>
           </div>
