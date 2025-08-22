@@ -5,4 +5,6 @@ class Event < ApplicationRecord
 
 	has_many :tickets, dependent: :destroy
 	has_many :orders, through: :tickets
+
+	enum :category, { conference: 0, meetup: 1, workshop: 2, other: 3 }
 end
