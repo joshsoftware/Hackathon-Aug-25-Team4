@@ -11,12 +11,14 @@ Rails.application.routes.draw do
   resources :events, only: [:create]
 
   resources :events do
-    resources :coupons, only: [:index, :create, :update, :destroy] do
+    resources :tickets
+    resources :coupons do
       collection do
-        post :apply   # POST /events/:event_id/coupons/apply
+        post :apply   # /events/:event_id/coupons/apply
       end
     end
   end
+  
   resources :orders, only: [:index, :show, :create, :update]
   resources :payments, only: [:create, :update]
 end
