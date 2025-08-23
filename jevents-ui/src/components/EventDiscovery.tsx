@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,24 @@ import { useEvents } from "@/hooks/useEvents";
 
 export default function EventDiscovery() {
   const { events } = useEvents(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Filtered Events (search + category)
+  const filteredEvents = useMemo(() => {
+    return events.filter((event) => {
+      const matchesSearch = event.title
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+      const matchesCategory = !selectedCategory
+        ? true
+        : event.category?.toLowerCase() === selectedCategory.toLowerCase();
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [events, searchQuery, selectedCategory]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -29,10 +48,9 @@ export default function EventDiscovery() {
                   <Input
                     placeholder="Search events, organizers, or keywords..."
                     className="border-0 text-lg focus-visible:ring-0"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button className="btn-hero h-12 px-8">Search Events</Button>
                 </div>
               </div>
             </div>
@@ -40,15 +58,26 @@ export default function EventDiscovery() {
         </div>
       </section>
 
+      {/* Categories & Events */}
       <section className="py-12 px-4 lg:px-6">
         <div className="container mx-auto">
           <div className="flex flex-wrap items-center justify-between mb-8">
             <div className="flex flex-wrap gap-3 mb-4 md:mb-0">
-              <Button variant={"default"} className={"btn-hero"}>
+              <Button
+                variant={!selectedCategory ? "default" : "outline"}
+                onClick={() => setSelectedCategory(null)}
+              >
                 All
               </Button>
+
               {categories.map((category, index) => (
-                <Button key={index} variant="outline" className="">
+                <Button
+                  key={index}
+                  variant={
+                    selectedCategory === category.title ? "default" : "outline"
+                  }
+                  onClick={() => setSelectedCategory(category.title)}
+                >
                   {category.title}
                 </Button>
               ))}
@@ -58,13 +87,13 @@ export default function EventDiscovery() {
           {/* Results Header */}
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-semibold">
-              Showing {events.length} events
+              Showing {filteredEvents.length} events
             </h2>
           </div>
 
           {/* Events Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.map((event, index) => (
+            {filteredEvents.map((event, index) => (
               <EventCard key={index} {...event} />
             ))}
           </div>
