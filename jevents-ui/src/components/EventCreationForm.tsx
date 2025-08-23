@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/select";
 import { categories } from "@/constants/event";
 import { useUserData } from "@/context/user";
+import { useNavigate } from "react-router-dom";
 
 export default function EventCreationForm() {
+  const navigate = useNavigate();
   const { data } = useUserData();
 
   const [title, setTitle] = useState("");
@@ -50,6 +52,7 @@ export default function EventCreationForm() {
         opening_start: "",
         opening_end: "",
         capacity: 0,
+        available: 0,
       },
     ]);
   };
@@ -102,12 +105,14 @@ export default function EventCreationForm() {
     });
 
     try {
-      const res = await axiosPrivate.post("/events", formData, {
+      const res = await axiosPrivate.post<{ id: string }>("/events", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: data.token,
         },
       });
+
+      navigate(`/event/${res.data.id}`);
     } catch (err) {
       console.error("Error creating event:", err);
     }
@@ -241,17 +246,13 @@ export default function EventCreationForm() {
                   {/* Other fields in grid 3 per line */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium">Price ($)</label>
+                      <label className="text-sm font-medium">Price (₹)</label>
                       <Input
-                        type="number"
+                        type="string"
                         placeholder="0.00"
                         value={ticket.price}
                         onChange={(e) =>
-                          handleTicketChange(
-                            index,
-                            "price",
-                            Number(e.target.value),
-                          )
+                          handleTicketChange(index, "price", e.target.value)
                         }
                         className="mt-2"
                       />
