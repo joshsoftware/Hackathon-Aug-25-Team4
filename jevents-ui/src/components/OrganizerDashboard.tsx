@@ -120,9 +120,6 @@ export default function OrganizerDashboard() {
           <Card className="card-elevated">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-xl font-semibold">Events</CardTitle>
-              <Button variant="outline" size="sm">
-                View All
-              </Button>
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-4">
