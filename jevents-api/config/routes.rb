@@ -24,4 +24,10 @@ Rails.application.routes.draw do
     end
   end
   resources :payments, only: [:create, :update]
+  resources :bookings do
+    collection do
+      post :bulk_create
+    end
+  end  
+  resources :orders, only: [:create, :show, :index]
 end
