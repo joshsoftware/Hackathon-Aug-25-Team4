@@ -146,29 +146,115 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 lg:px-6 bg-gradient-hero">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Create Your Next Event?
-          </h2>
-          <p className="text-xl text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-            Join thousands of event organizers who trust EventHub to bring their
-            vision to life and create memorable experiences
-          </p>
+      <footer className="bg-[#1e2021] text-white py-12 px-6">
+        <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+          {/* Brand */}
+          <div>
+            <h3 className="text-2xl font-bold">JEvents</h3>
+            <p className="mt-3 text-sm text-white/70">
+              Bringing people together through events that inspire, connect, and
+              grow communities.
+            </p>
+          </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4">
-              Start Creating Events
-            </Button>
-            <Button
-              variant="outline"
-              className="border-white text-white hover:bg-white/10 text-lg px-8 py-4"
-            >
-              Learn More
-            </Button>
+          {/* Company */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Company</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  About
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Careers
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Press
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Blog
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Support */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Support</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Help Center
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Terms of Service
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Privacy Policy
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Explore */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Explore</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Upcoming Events
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Organizers
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Venues
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-white/90 transition">
+                  Partners
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
-      </section>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-white/20 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-sm text-white/70">
+          <p>© {new Date().getFullYear()} JEvents. All rights reserved.</p>
+          <div className="flex gap-4 mt-3 sm:mt-0">
+            <a href="#" className="hover:text-white transition">
+              Twitter
+            </a>
+            <a href="#" className="hover:text-white transition">
+              LinkedIn
+            </a>
+            <a href="#" className="hover:text-white transition">
+              Instagram
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

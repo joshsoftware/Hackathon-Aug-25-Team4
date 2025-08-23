@@ -28,7 +28,7 @@ export default function Header() {
               <Link to="/" className="flex gap-2">
                 <Calendar className="h-8 w-8 text-primary" />
                 <span className="text-xl font-bold gradient-text">
-                  EventHub
+                  JEvents
                 </span>
               </Link>
             </div>
