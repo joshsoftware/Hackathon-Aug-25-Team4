@@ -1,5 +1,10 @@
 import { axiosPublic } from "@/axios/instance";
-import { Event, EventDetail } from "@/types/events";
+import {
+  BookingsRequest,
+  BookingsResponse,
+  Event,
+  EventDetail,
+} from "@/types/events";
 
 export const getEvents = async (userId: string | null): Promise<Event[]> => {
   let url = `/events`;
@@ -11,5 +16,15 @@ export const getEvents = async (userId: string | null): Promise<Event[]> => {
 };
 
 export const getEvent = async (eventID: string): Promise<EventDetail> => {
-  return axiosPublic.get<EventDetail>(`/events/${eventID}`).then((res) => res.data);
+  return axiosPublic
+    .get<EventDetail>(`/events/${eventID}`)
+    .then((res) => res.data);
+};
+
+export const createBookings = async (
+  body: BookingsRequest,
+): Promise<BookingsResponse> => {
+  return axiosPublic
+    .post<BookingsResponse>("/bookings/bulk_create", body)
+    .then((res) => res.data);
 };

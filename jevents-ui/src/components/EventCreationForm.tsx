@@ -87,7 +87,7 @@ export default function EventCreationForm() {
       formData.append(`tickets[][price]`, ticket.price.toString());
 
       formData.append(`tickets[][capacity]`, ticket.capacity.toString());
-      formData.append(`tickets[][available]`, ticket.available.toString());
+      formData.append(`tickets[][available]`, ticket.capacity.toString());
 
       if (ticket.opening_start) {
         formData.append(`tickets[][opening_start]`, ticket.opening_start);
