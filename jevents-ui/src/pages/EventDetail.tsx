@@ -38,7 +38,7 @@ export default function EventDetail() {
 
   const [couponCode, setCouponCode] = useState("");
   const [backendFinalAmount, setBackendFinalAmount] = useState<number | null>(
-    null
+    null,
   );
   const [couponError, setCouponError] = useState("");
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
@@ -124,13 +124,13 @@ export default function EventDetail() {
         ticket_id: id,
         name: names[idx] || "",
       }));
-    }
+    },
   );
 
   const handleTicketNameChange = (
     ticketId: number,
     idx: number,
-    name: string
+    name: string,
   ) => {
     setTicketNames((prev) => {
       const arr = prev[ticketId] || [];
@@ -163,8 +163,10 @@ export default function EventDetail() {
             amount: amountPaise / 100,
             status: "success",
           });
-          await createBookings({ bookings });
-          navigate('/history');
+
+          await createBookings({ order_id: orderId, bookings });
+
+          navigate("/history");
         } catch (err) {
           console.error("Post-payment failure", err);
           alert("Payment succeeded, but saving order failed.");
