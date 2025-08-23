@@ -44,7 +44,7 @@ export default function OrganizerDashboard() {
     },
     {
       title: "Total Revenue",
-      value: `${stats.total_revenue}₹`,
+      value: `₹${stats.total_revenue}`,
       icon: DollarSign,
       color: "text-accent",
     },
@@ -65,7 +65,7 @@ export default function OrganizerDashboard() {
       year: "numeric",
     }),
     attendees: event.attendees || 0, // if API provides
-    revenue: `${event.revenue || "0.0"}₹`, // if API provides
+    revenue: `₹${event.revenue || "0.0"}`, // if API provides
   }));
 
   return (

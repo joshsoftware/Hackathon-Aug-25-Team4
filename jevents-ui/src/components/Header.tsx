@@ -27,9 +27,7 @@ export default function Header() {
             <div className="flex items-center space-x-2">
               <Link to="/" className="flex gap-2">
                 <Calendar className="h-8 w-8 text-primary" />
-                <span className="text-xl font-bold gradient-text">
-                  JEvents
-                </span>
+                <span className="text-xl font-bold gradient-text">JEvents</span>
               </Link>
             </div>
           </div>
@@ -53,6 +51,14 @@ export default function Header() {
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 Dashboard
+              </Link>
+            )}
+            {data?.user?.role == USER_ROLES.ATTENDEE && (
+              <Link
+                to="/history"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                History
               </Link>
             )}
           </nav>

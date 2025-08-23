@@ -363,7 +363,7 @@ export default function EventDetail() {
                     <div className="space-y-4 pt-4 border-t">
                       <div className="flex justify-between font-semibold">
                         <span>Total ({getTotalTickets()} tickets)</span>
-                        <span>{getTotalAmount()}₹</span>
+                        <span>₹{getTotalAmount()}</span>
                       </div>
                       <Button className="w-full" onClick={handleBookNow}>
                         Book Now
@@ -401,7 +401,7 @@ export default function EventDetail() {
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-lg">{ticket.price}₹</p>
+                          <p className="font-bold text-lg">₹{ticket.price}</p>
                         </div>
                       </div>
 
@@ -485,7 +485,7 @@ export default function EventDetail() {
                       <span>
                         {ticket?.name} × {quantity}
                       </span>
-                      <span>{(Number(ticket?.price) || 0) * quantity}₹</span>
+                      <span>₹{(Number(ticket?.price) || 0) * quantity}</span>
                     </div>
                   );
                 })}
@@ -493,7 +493,7 @@ export default function EventDetail() {
               <Separator />
               <div className="flex justify-between font-bold">
                 <span>Total</span>
-                <span>{getTotalAmount()}₹</span>
+                <span>₹{getTotalAmount()}</span>
               </div>
               <div className="flex gap-2">
                 <Button

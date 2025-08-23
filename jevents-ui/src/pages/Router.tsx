@@ -9,6 +9,7 @@ import EventDetail from "./EventDetail";
 import NotFound from "./NotFound";
 import { USER_ROLES } from "@/constants/user";
 import { useUserData } from "@/context/user";
+import UserHistory from "./UserHistory";
 
 const Router = () => {
   const { data } = useUserData();
@@ -21,6 +22,7 @@ const Router = () => {
           <Route path="/" element={<Index />} />
           <Route path="/events" element={<Events />} />
           <Route path="/event/:id" element={<EventDetail />} />
+          <Route path="/history" element={<UserHistory />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
