@@ -15,6 +15,8 @@ export interface Event {
   end_time: string;
   category: string;
   image?: File | null;
+  attendees?: number;
+  revenue?: string;
 }
 
 export interface Ticket {
