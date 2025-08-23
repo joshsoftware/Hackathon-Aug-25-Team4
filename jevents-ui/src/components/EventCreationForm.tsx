@@ -151,12 +151,9 @@ export default function EventCreationForm() {
                   <SelectContent>
                     {categories.map((category) => (
                       <SelectItem value={category.value}>
-                        category.title
+                        {category.title}
                       </SelectItem>
                     ))}
-                    <SelectItem value="meetup">Meetup</SelectItem>
-                    <SelectItem value="workshop">Workshop</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
