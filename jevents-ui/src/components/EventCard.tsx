@@ -1,31 +1,26 @@
-import { Calendar, MapPin, Users, Star } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { EventTime } from "./EventTime";
 
 interface EventCardProps {
   title: string;
   description: string;
-  date: string;
   location: string;
-  price: string;
-  organizer: string;
-  attendees: number;
-  rating: number;
-  image: string;
+  start_time: string;
+  end_time: string;
   category: string;
+  image?: File | null;
 }
 
 export default function EventCard({
   title,
   description,
-  date,
   location,
-  price,
-  organizer,
-  attendees,
-  rating,
-  image,
+  start_time,
+  end_time,
   category,
+  image,
 }: EventCardProps) {
   return (
     <div className="event-card cursor-pointer group">
@@ -39,10 +34,6 @@ export default function EventCard({
         <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
           {category}
         </span>
-        <div className="flex items-center space-x-1">
-          <Star className="h-4 w-4 text-warning fill-warning" />
-          <span className="text-sm font-medium">{rating}</span>
-        </div>
       </div>
 
       <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
@@ -56,23 +47,22 @@ export default function EventCard({
       <div className="space-y-2 mb-4">
         <div className="flex items-center text-sm text-muted-foreground">
           <Calendar className="h-4 w-4 mr-2" />
-          {date}
+          <EventTime start_time={start_time} end_time={end_time} />
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 mr-2" />
           {location}
         </div>
+
+        {/*
         <div className="flex items-center text-sm text-muted-foreground">
           <Users className="h-4 w-4 mr-2" />
           {attendees} attending
         </div>
+        */}
       </div>
 
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">From</p>
-          <p className="text-xl font-bold text-primary">{price}</p>
-        </div>
         <Link to="/event/:id">
           <Button className="btn-accent">View Details</Button>
         </Link>

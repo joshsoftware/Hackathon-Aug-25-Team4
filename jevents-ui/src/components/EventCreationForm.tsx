@@ -13,8 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { categories } from "@/constants/event";
+import { useUserData } from "@/context/user";
 
 export default function EventCreationForm() {
+  const { data } = useUserData();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -64,22 +68,49 @@ export default function EventCreationForm() {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("category", category);
-    formData.append("start_time", startDate);
-    formData.append("end_time", endDate);
-    formData.append("location", `${venue}, ${address}`);
+
+    // Event details
+    formData.append("event[title]", title);
+    formData.append("event[description]", description);
+    formData.append("event[category]", category);
+    formData.append("event[start_time]", startDate);
+    formData.append("event[end_time]", endDate);
+    formData.append("event[location]", `${venue}, ${address}`);
 
     if (image) {
-      formData.append("image", image);
+      formData.append("event[image]", image);
     }
 
-    formData.append("tickets", JSON.stringify(tickets));
+    // Tickets - append each ticket in "tickets[][field]" format
+    tickets.forEach((ticket) => {
+      formData.append(`tickets[][name]`, ticket.name);
+      formData.append(`tickets[][price]`, ticket.price.toString());
+      formData.append(
+        `tickets[][capacity]`,
+        ticket.capacity.toString(),
+      );
+
+      if (ticket.opening_start) {
+        formData.append(
+          `tickets[][opening_start]`,
+          ticket.opening_start,
+        );
+      }
+
+      if (ticket.opening_end) {
+        formData.append(`tickets[][opening_end]`, ticket.opening_end);
+      }
+
+      // If user_id is required, you can append it here (replace with real user id)
+      formData.append(`tickets[][user_id]`, "1");
+    });
 
     try {
       const res = await axiosPrivate.post("/events", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: data.token,
+        },
       });
       console.log("Event created:", res.data);
     } catch (err) {
@@ -123,7 +154,11 @@ export default function EventCreationForm() {
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="conference">Conference</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem value={category.value}>
+                        category.title
+                      </SelectItem>
+                    ))}
                     <SelectItem value="meetup">Meetup</SelectItem>
                     <SelectItem value="workshop">Workshop</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
@@ -132,6 +167,7 @@ export default function EventCreationForm() {
               </div>
             </CardContent>
           </Card>
+
           {/* Date & Location */}
           <Card>
             <CardHeader>

@@ -14,7 +14,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
-import { useUserRole } from "@/context/user";
+import { useUserData } from "@/context/user";
 import { USER_ROLES } from "@/constants/user";
 import {
   Dialog,
@@ -89,7 +89,7 @@ const mockEvent: Event = {
 };
 
 export default function EventDetail() {
-  const { role } = useUserRole();
+  const { data } = useUserData();
 
   const { id } = useParams();
   const [selectedTickets, setSelectedTickets] = useState<
@@ -167,7 +167,9 @@ export default function EventDetail() {
           Back to Events
         </Link>
 
-        <div className={`grid grid-cols-1 ${role == USER_ROLES.ORGANIZER ? "lg:grid-cols-1" : "lg:grid-cols-3"} gap-8`}>
+        <div
+          className={`grid grid-cols-1 ${data?.user?.role == USER_ROLES.ORGANIZER ? "lg:grid-cols-1" : "lg:grid-cols-3"} gap-8`}
+        >
           {/* Event Details */}
           <div className="lg:col-span-2 space-y-6">
             {/* Event Header */}
@@ -238,7 +240,7 @@ export default function EventDetail() {
           </div>
 
           {/* Ticket Booking Section */}
-          {role == USER_ROLES.ATTENDEE ? (
+          {data?.user?.role == USER_ROLES.ATTENDEE ? (
             <div className="space-y-6">
               <Card className="sticky top-4">
                 <CardHeader>
@@ -337,7 +339,7 @@ export default function EventDetail() {
             </div>
           ) : null}
 
-          {!role ? (
+          {!data?.user?.role ? (
             <div className="space-y-6">
               <Card className="sticky top-4">
                 <CardHeader>

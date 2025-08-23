@@ -2,10 +2,10 @@ import { ArrowRight, Calendar, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { USER_ROLES } from "@/constants/user";
-import { useUserRole } from "@/context/user";
+import { useUserData } from "@/context/user";
 
 export default function Hero() {
-  const { role } = useUserRole();
+  const { data } = useUserData();
 
   return (
     <section className="hero-gradient py-20 px-4 lg:px-6">
@@ -22,7 +22,7 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            {role == USER_ROLES.ORGANIZER ? (
+            {data?.user?.role == USER_ROLES.ORGANIZER ? (
               <Link to="/create-event">
                 <Button className="btn-hero text-lg px-8 py-4">
                   Start Creating Events
@@ -31,7 +31,7 @@ export default function Hero() {
               </Link>
             ) : null}
 
-            {!role ? (
+            {!data?.user?.role ? (
               <Link to="/login">
                 <Button className="btn-hero text-lg px-8 py-4">
                   Start Creating Events

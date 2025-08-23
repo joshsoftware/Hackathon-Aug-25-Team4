@@ -1,5 +1,7 @@
 export const setLocalStorage = <T>(key: string, data: T) => {
+  console.log("before json string", data);
   const jsonString = JSON.stringify(data);
+  console.log("after json string", jsonString);
   localStorage.setItem(key, jsonString);
 };
 

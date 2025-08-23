@@ -8,13 +8,13 @@ import Signup from "./Signup";
 import EventDetail from "./EventDetail";
 import NotFound from "./NotFound";
 import { USER_ROLES } from "@/constants/user";
-import { useUserRole } from "@/context/user";
+import { useUserData } from "@/context/user";
 
 const Router = () => {
-  const { role } = useUserRole();
+  const { data } = useUserData();
 
   // ATTENDEE
-  if (role == USER_ROLES.ATTENDEE) {
+  if (data?.user?.role == USER_ROLES.ATTENDEE) {
     return (
       <BrowserRouter>
         <Routes>
@@ -28,7 +28,7 @@ const Router = () => {
   }
 
   // ORGANIZER
-  if (role == USER_ROLES.ORGANIZER) {
+  if (data?.user?.role == USER_ROLES.ORGANIZER) {
     return (
       <BrowserRouter>
         <Routes>

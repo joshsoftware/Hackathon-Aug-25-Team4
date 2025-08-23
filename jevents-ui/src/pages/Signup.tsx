@@ -12,15 +12,14 @@ import {
 } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Link, useNavigate } from "react-router-dom";
-import { USER_LOALSTORAGE_KEY, USER_ROLES, UserRole } from "@/constants/user";
-import { SignUpRequest, UserLocalStorage } from "@/types/auth";
-import { setLocalStorage } from "@/lib/localStorage";
+import { USER_ROLES, UserRole } from "@/constants/user";
+import { SignUpRequest } from "@/types/auth";
 import { signup } from "@/api/auth";
-import { useUserRole } from "@/context/user";
+import { useUserData } from "@/context/user";
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { setRole } = useUserRole();
+  const { setUserData } = useUserData();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -63,12 +62,7 @@ export default function Signup() {
 
     try {
       const data = await signup(body);
-      setLocalStorage<UserLocalStorage>(USER_LOALSTORAGE_KEY, {
-        token: data.token,
-        user: data.user,
-      });
-
-      setRole(data.user.role);
+      setUserData(data);
 
       navigate("/");
     } catch (error) {

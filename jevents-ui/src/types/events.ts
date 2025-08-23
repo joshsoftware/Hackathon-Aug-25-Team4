@@ -3,6 +3,10 @@ export interface CreateEventRequest {
   tickets: Ticket[];
 }
 
+export interface EventDetail {
+  event: Event;
+}
+
 export interface Event {
   title: string;
   description: string;
