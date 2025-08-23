@@ -26,7 +26,7 @@ class EventsController < ApplicationController
 
   # GET /events/:id - Get specific event
   def show
-		@event = Event.find(params[:id])
+	@event = Event.find(params[:id])
     event_data = @event.as_json(include: :tickets)
 
     if current_user.nil?

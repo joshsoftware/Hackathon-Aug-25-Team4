@@ -1,36 +1,42 @@
 import { useEffect, useState } from "react";
-import { Event } from "@/types/events";
+import { EventDetail } from "@/types/events";
 import { getEvent } from "@/api/events";
+import { useParams } from "react-router-dom";
 
 interface UseEventsResult {
-  event: Event;
+  event: EventDetail;
   loading: boolean;
   error: string | null;
-  refetch: () => void;
 }
 
-export function useEvent(eventId: string | null): UseEventsResult {
-  const [event, setEvent] = useState<Event>(null);
+export function useEvent(): UseEventsResult {
+  const params = useParams();
+  const id = params.id ?? null;
+
+  const [event, setEvent] = useState<EventDetail>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvent = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const res = await getEvent(eventId);
-      setEvent(res);
-    } catch (err) {
-      setError(err.message || "Failed to fetch events");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchEvent();
-  }, [eventId]);
+    console.log("ho");
 
-  return { event: event, loading, error, refetch: fetchEvent };
+    const fetchEvent = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await getEvent(id);
+        console.log("ho", res);
+        setEvent(res);
+      } catch (err) {
+        setError(err.message || "Failed to fetch events");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvent();
+  }, [id]);
+
+  return { event, loading, error };
 }
