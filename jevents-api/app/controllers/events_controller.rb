@@ -11,7 +11,7 @@ class EventsController < ApplicationController
       events = Event.all
     end
   
-    render json: events, status: :ok
+    render json: events.as_json(methods: [:image_url]), status: :ok
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
@@ -19,14 +19,17 @@ class EventsController < ApplicationController
 
   # GET /events/:id - Get specific event
   def show
-    event_data = @event.as_json(include: :tickets)
+    event_data = @event.as_json(
+      include: :tickets,
+      methods: [:image_url]
+    )
   
     if current_user.nil?
       event_data["coupons"] = nil
     elsif current_user.role == "organizer" && @event.organizers.include?(current_user)
       event_data["coupons"] = @event.coupons.as_json
     end
-  
+    
     render json: event_data, status: :ok
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
