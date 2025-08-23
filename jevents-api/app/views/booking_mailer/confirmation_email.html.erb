@@ -1,0 +1,24 @@
+<h1>Hi <%= @user.name %>,</h1>
+
+<p>Your booking has been confirmed! 🎉</p>
+
+<h2>Booking Details</h2>
+<ul>
+  <li><strong>Booking Name:</strong> <%= @booking.name %></li>
+  <li><strong>Ticket:</strong> <%= @booking.ticket.name %></li>
+  <li><strong>Price:</strong> ₹<%= @booking.ticket.price %></li>
+  <li><strong>Status:</strong> Confirmed</li>
+</ul>
+
+<h2>Event Details</h2>
+<ul>
+  <li><strong>Title:</strong> <%= @booking.ticket.event.title %></li>
+  <li><strong>Location:</strong> <%= @booking.ticket.event.location %></li>
+  <li><strong>Start Time:</strong> <%= @booking.ticket.event.start_time.strftime("%B %d, %Y %I:%M %p") %></li>
+  <li><strong>End Time:</strong> <%= @booking.ticket.event.end_time.strftime("%B %d, %Y %I:%M %p") %></li>
+</ul>
+
+<p>We look forward to seeing you at the event! 🎟️</p>
+
+<p>Thank you for booking with us,<br>
+The Events Team</p>
