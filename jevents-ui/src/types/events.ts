@@ -72,3 +72,16 @@ export interface TicketDetail {
 export interface CoupounDetail {
   id: number;
 }
+
+export interface BookingsRequest {
+  bookings: Booking[];
+}
+
+export interface Booking {
+  ticket_id: number;
+  name: string;
+}
+
+export interface BookingsResponse {
+  output: string;
+}

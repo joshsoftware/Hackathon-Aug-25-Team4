@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,8 @@ import { createOrder, updateOrder } from "@/api/order";
 import { createPayment } from "@/api/payment";
 import { useEvent } from "@/hooks/useEvent";
 import { EventTime } from "@/components/EventTime";
+import { createBookings } from "@/api/events";
+import { Booking } from "@/types/events";
 
 export default function EventDetail() {
   const { data } = useUserData();
@@ -29,6 +31,7 @@ export default function EventDetail() {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [showLoginOverlay, setShowLoginOverlay] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
+  const [ticketNames, setTicketNames] = useState<Record<number, string[]>>({});
 
   const handleTicketQuantityChange = (ticketId: number, change: number) => {
     setSelectedTickets((prev) => {
@@ -66,7 +69,7 @@ export default function EventDetail() {
     );
   };
 
-  const handlePayment = () => {
+  const handlePayment = (bookings: Booking[]) => {
     const totalAmountInPaise = getTotalAmount() * 100;
 
     if (!orderId) {
@@ -92,9 +95,8 @@ export default function EventDetail() {
             status: "success",
           });
 
-          alert(
-            `Payment successful! Payment ID: ${response.razorpay_payment_id}`,
-          );
+          // Create bookings
+          await createBookings({ bookings });
         } catch (err) {
           console.error("Error saving payment/order:", err);
           alert("Payment succeeded, but order/payment update failed.");
@@ -141,6 +143,31 @@ export default function EventDetail() {
       alert("Failed to create order. Please try again.");
     }
   };
+
+  const handleTicketNameChange = (
+    ticketId: number,
+    index: number,
+    name: string,
+  ) => {
+    setTicketNames((prev) => {
+      const currentNames = prev[ticketId] || [];
+      const updatedNames = [...currentNames];
+      updatedNames[index] = name;
+      return { ...prev, [ticketId]: updatedNames };
+    });
+  };
+
+  // Inside Booking Modal
+  const bookings = Object.entries(selectedTickets).flatMap(
+    ([ticketIdStr, quantity]) => {
+      const ticketId = Number(ticketIdStr);
+      const names = ticketNames[ticketId] || [];
+      return Array.from({ length: quantity }).map((_, idx) => ({
+        ticket_id: ticketId,
+        name: names[idx] || "",
+      }));
+    },
+  );
 
   if (!event) return <></>;
 
@@ -266,37 +293,59 @@ export default function EventDetail() {
                       </div>
 
                       {ticket.available > 0 && (
-                        <div className="flex items-center justify-between bg-muted rounded-lg p-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() =>
-                              handleTicketQuantityChange(ticket.id, -1)
-                            }
-                            disabled={!selectedTickets[ticket.id]}
-                          >
-                            <Minus className="w-3 h-3" />
-                          </Button>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between bg-muted rounded-lg p-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() =>
+                                handleTicketQuantityChange(ticket.id, -1)
+                              }
+                              disabled={!selectedTickets[ticket.id]}
+                            >
+                              <Minus className="w-3 h-3" />
+                            </Button>
 
-                          <span className="px-4 font-medium">
-                            {selectedTickets[ticket.id] || 0}
-                          </span>
+                            <span className="px-4 font-medium">
+                              {selectedTickets[ticket.id] || 0}
+                            </span>
 
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() =>
-                              handleTicketQuantityChange(ticket.id, 1)
-                            }
-                            disabled={
-                              (selectedTickets[ticket.id] || 0) >=
-                              Math.min(ticket.available, 10)
-                            }
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() =>
+                                handleTicketQuantityChange(ticket.id, 1)
+                              }
+                              disabled={
+                                (selectedTickets[ticket.id] || 0) >=
+                                Math.min(ticket.available, 10)
+                              }
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
+
+                          {/* Render input fields for each selected ticket */}
+                          {Array.from({
+                            length: selectedTickets[ticket.id] || 0,
+                          }).map((_, idx) => (
+                            <input
+                              key={idx}
+                              type="text"
+                              placeholder={`Name for ticket ${idx + 1}`}
+                              value={ticketNames[ticket.id]?.[idx] || ""}
+                              onChange={(e) =>
+                                handleTicketNameChange(
+                                  ticket.id,
+                                  idx,
+                                  e.target.value,
+                                )
+                              }
+                              className="w-full border rounded p-2 mt-1"
+                            />
+                          ))}
                         </div>
                       )}
 
@@ -454,7 +503,10 @@ export default function EventDetail() {
                 >
                   Cancel
                 </Button>
-                <Button className="flex-1" onClick={handlePayment}>
+                <Button
+                  className="flex-1"
+                  onClick={() => handlePayment(bookings)}
+                >
                   Proceed to Payment
                 </Button>
               </div>
