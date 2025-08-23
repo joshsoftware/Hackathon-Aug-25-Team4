@@ -75,6 +75,7 @@ export interface CoupounDetail {
 
 export interface BookingsRequest {
   bookings: Booking[];
+  order_id: number;
 }
 
 export interface Booking {

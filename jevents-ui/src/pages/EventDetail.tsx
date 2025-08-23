@@ -96,7 +96,7 @@ export default function EventDetail() {
           });
 
           // Create bookings
-          await createBookings({ bookings });
+          await createBookings({ order_id: orderId, bookings: bookings });
         } catch (err) {
           console.error("Error saving payment/order:", err);
           alert("Payment succeeded, but order/payment update failed.");
