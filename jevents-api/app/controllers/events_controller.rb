@@ -5,16 +5,20 @@ class EventsController < ApplicationController
   def index
     user_id = params[:user_id]
 
-    if user_id.present?
-      events = Event.joins(:event_organizers).where(event_organizers: { user_id: user_id })
-			total_revenue = Order.where(event_id: events.pluck(:id), payment_status: 1).sum(:final_amount)
-			attendees = Order.where(event_id: events.pluck(:id)).select(:user_id).distinct.count
+    events = if user_id.present?
+      Event.joins(:event_organizers).where(event_organizers: { user_id: user_id })
+    else
+      Event.all
+    end
 
-			render json: events, status: :ok
-		else
-			events = Event.all
-			render json: events, status: :ok
-		end
+    events_json = events.map do |event|
+      event.as_json(include: :tickets).merge(
+        image_url: event.image_url,
+        organizers: event.organizers.as_json(only: [:id, :name, :email])
+      )
+    end
+
+    render json: events_json, status: :ok
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
