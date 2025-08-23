@@ -14,7 +14,10 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import { createOrder, updateOrder } from "@/api/order";
+import { createPayment } from "@/api/payment";
 
+// --- Interfaces ---
 interface TicketCategory {
   id: string;
   name: string;
@@ -38,12 +41,11 @@ interface Event {
   ticketCategories: TicketCategory[];
 }
 
-// Mock event data
+// --- Mock Data ---
 const mockEvent: Event = {
   id: "1",
   title: "Tech Innovation Summit 2024",
-  description:
-    "Join us for an exciting day of technological innovation, networking, and learning. This summit brings together industry leaders, startup founders, and tech enthusiasts to explore the latest trends in AI, blockchain, and sustainable technology. Experience keynote speeches, interactive workshops, and unparalleled networking opportunities.",
+  description: "...",
   date: "2024-09-15",
   time: "09:00 AM - 06:00 PM",
   location: "San Francisco, CA",
@@ -86,8 +88,7 @@ export default function EventDetail() {
     Record<string, number>
   >({});
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-
-  // In a real app, you would fetch event data based on the ID
+  const [orderId, setOrderId] = useState<number | null>(null);
   const event = mockEvent;
 
   const handleTicketQuantityChange = (categoryId: string, change: number) => {
@@ -95,7 +96,6 @@ export default function EventDetail() {
       const currentQuantity = prev[categoryId] || 0;
       const category = event.ticketCategories.find((c) => c.id === categoryId);
       const maxQuantity = Math.min(category?.remainingCount || 0, 10);
-
       const newQuantity = Math.max(
         0,
         Math.min(maxQuantity, currentQuantity + change)
@@ -106,10 +106,7 @@ export default function EventDetail() {
         return rest;
       }
 
-      return {
-        ...prev,
-        [categoryId]: newQuantity,
-      };
+      return { ...prev, [categoryId]: newQuantity };
     });
   };
 
@@ -127,7 +124,7 @@ export default function EventDetail() {
 
   const getTotalTickets = () => {
     return Object.values(selectedTickets).reduce(
-      (total, quantity) => total + quantity,
+      (total, qty) => total + qty,
       0
     );
   };
@@ -142,28 +139,47 @@ export default function EventDetail() {
   };
 
   const handlePayment = () => {
-    const totalAmountInPaise = getTotalAmount() * 100; // Razorpay amount is in paise
+    const totalAmountInPaise = getTotalAmount() * 100;
 
-    console.log("here");
+    if (!orderId) {
+      alert("Order ID not found. Please try again.");
+      return;
+    }
 
     const options = {
-      key: "rzp_test_R8SxN8FrDdN8KF", // Replace with your Razorpay key ID
+      key: "rzp_test_R8SxN8FrDdN8KF",
       amount: totalAmountInPaise,
       currency: "INR",
       name: event.title,
       description: "Ticket Booking",
-      image: event.image, // You can add your logo here
-      handler: function (response: any) {
-        console.log(response);
-        alert(
-          `Payment successful! Payment ID: ${response.razorpay_payment_id}`
-        );
-        // You can redirect or update your state here after successful payment
+      image: event.image,
+      handler: async function (response: any) {
+        try {
+          // ✅ Update Order
+          await updateOrder(orderId, { payment_status: "paid" });
+
+          // ✅ Create Payment Record
+          await createPayment({
+            order_id: orderId,
+            method: "upi",
+            transaction_id: response.razorpay_payment_id,
+            amount: totalAmountInPaise / 100,
+            status: "success",
+          });
+
+          alert(
+            `Payment successful! Payment ID: ${response.razorpay_payment_id}`
+          );
+        } catch (err) {
+          console.error("Error saving payment/order:", err);
+          alert("Payment succeeded, but order/payment update failed.");
+        }
+
         setIsBookingModalOpen(false);
         setSelectedTickets({});
+        setOrderId(null);
       },
       prefill: {
-        // Optionally, prefill user info
         name: "John Doe",
         email: "john.doe@example.com",
         contact: "9999999999",
@@ -172,13 +188,33 @@ export default function EventDetail() {
         eventId: event.id,
         tickets: JSON.stringify(selectedTickets),
       },
-      theme: {
-        color: "#3399cc",
-      },
+      theme: { color: "#3399cc" },
     };
 
     const rzp = new window.Razorpay(options);
     rzp.open();
+  };
+
+  const handleBookNow = async () => {
+    try {
+      const total = getTotalAmount();
+
+      const order = await createOrder({
+        user_id: 1, // Replace with actual user ID from auth
+        event_id: Number(event.id),
+        coupon_id: null,
+        total_amount: total,
+        discount_applied: 0,
+        final_amount: total,
+        payment_status: "pending",
+      });
+
+      setOrderId(order.id);
+      setIsBookingModalOpen(true);
+    } catch (error) {
+      console.error("Create order failed:", error);
+      alert("Failed to create order. Please try again.");
+    }
   };
 
   return (
@@ -186,7 +222,6 @@ export default function EventDetail() {
       <Header />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Back button */}
         <Link
           to="/events"
           className="inline-flex items-center text-primary hover:text-primary-hover mb-6"
@@ -198,7 +233,6 @@ export default function EventDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Event Details */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Event Header */}
             <div>
               <div className="aspect-video bg-gradient-subtle rounded-lg mb-6 flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
@@ -233,7 +267,7 @@ export default function EventDetail() {
               </div>
             </div>
 
-            {/* Event Description */}
+            {/* Description */}
             <Card>
               <CardHeader>
                 <CardTitle>About This Event</CardTitle>
@@ -255,9 +289,9 @@ export default function EventDetail() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {event.organizers.map((organizer, index) => (
-                    <Badge key={index} variant="outline">
-                      {organizer}
+                  {event.organizers.map((org, i) => (
+                    <Badge key={i} variant="outline">
+                      {org}
                     </Badge>
                   ))}
                 </div>
@@ -265,7 +299,7 @@ export default function EventDetail() {
             </Card>
           </div>
 
-          {/* Ticket Booking Section */}
+          {/* Booking Section */}
           <div className="space-y-6">
             <Card className="sticky top-4">
               <CardHeader>
@@ -306,11 +340,9 @@ export default function EventDetail() {
                         >
                           <Minus className="w-3 h-3" />
                         </Button>
-
                         <span className="px-4 font-medium">
                           {selectedTickets[category.id] || 0}
                         </span>
-
                         <Button
                           variant="outline"
                           size="icon"
@@ -345,10 +377,7 @@ export default function EventDetail() {
                       <span>${getTotalAmount()}</span>
                     </div>
 
-                    <Button
-                      className="w-full"
-                      onClick={() => setIsBookingModalOpen(true)}
-                    >
+                    <Button className="w-full" onClick={handleBookNow}>
                       Book Now
                     </Button>
                   </div>
@@ -365,7 +394,7 @@ export default function EventDetail() {
         </div>
       </div>
 
-      {/* Simple Booking Confirmation Modal */}
+      {/* Booking Modal */}
       {isBookingModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <Card className="max-w-md w-full">
