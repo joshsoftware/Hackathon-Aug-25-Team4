@@ -3,33 +3,42 @@ class CouponsController < ApplicationController
   before_action :authorize_organizer!, only: [:create, :update, :destroy]
 
   def apply
-    coupon = @event.coupons.find_by(code: params[:coupon_code])
-
-    # debugger
-    
+    coupon = @event.coupons.find_by(code: params[:code])
+  
     if coupon.nil?
       return render json: { error: "Invalid coupon" }, status: :not_found
     end
-
+  
     unless coupon.active? &&
            (coupon.valid_from.nil? || coupon.valid_from <= Time.current)
       return render json: { error: "Coupon is not valid" }, status: :unprocessable_entity
     end
-
-    original_price = params[:total_amount] || 0
-
+  
+    # Check usage limit
+    if coupon.usage_limit.present? && coupon.usage_limit <= 0
+      return render json: { error: "Coupon usage limit exceeded" }, status: :unprocessable_entity
+    end
+  
+    original_price = params[:total_amount].to_f || 0.0
+  
     discounted_price =
       if coupon.discount_type == "percentage"
         original_price - (original_price * (coupon.discount_value.to_f / 100))
       else # fixed amount
         [original_price - coupon.discount_value.to_f, 0].max
       end
-
+  
+    # Decrease usage limit and mark inactive if exhausted
+    if coupon.usage_limit.present?
+      coupon.decrement!(:usage_limit)
+      coupon.update(active: false) if coupon.usage_limit <= 0
+    end
+  
     render json: {
       discounted_price: discounted_price
     }, status: :ok
   end
-
+  
   # GET /events/:event_id/coupons
   def index
     @coupons = @event.coupons.active
