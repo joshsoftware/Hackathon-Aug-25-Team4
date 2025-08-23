@@ -13,13 +13,13 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "@/api/auth";
 import { LoginRequest, UserLocalStorage } from "@/types/auth";
-import { USER_LOALSTORAGE_KEY } from "@/constants/user";
+import { USER_LOCALSTORAGE_KEY } from "@/constants/user";
 import { setLocalStorage } from "@/lib/localStorage";
-import { useUserRole } from "@/context/user";
+import { useUserData } from "@/context/user";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { setRole } = useUserRole();
+  const { setUserData } = useUserData();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,12 +35,7 @@ export default function Login() {
 
     try {
       const data = await login(body);
-      setLocalStorage<UserLocalStorage>(USER_LOALSTORAGE_KEY, {
-        token: data.token,
-        user: data.user,
-      });
-
-      setRole(data.user.role);
+      setUserData(data);
 
       navigate("/");
     } catch (error) {

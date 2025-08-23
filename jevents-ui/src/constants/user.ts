@@ -5,4 +5,4 @@ export const USER_ROLES = {
 
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
-export const USER_LOALSTORAGE_KEY = "USER_LOALSTORAGE_KEY";
+export const USER_LOCALSTORAGE_KEY = "USER_LOALSTORAGE_KEY";

@@ -1,20 +1,19 @@
 import { Calendar, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { USER_LOALSTORAGE_KEY, USER_ROLES } from "@/constants/user";
+import { USER_LOCALSTORAGE_KEY, USER_ROLES } from "@/constants/user";
 import { resetLocalStorageData } from "@/lib/localStorage";
-import { useUserRole } from "@/context/user";
+import { useUserData } from "@/context/user";
 
 export default function Header() {
   const navigate = useNavigate();
-  const { role, setRole } = useUserRole();
+  const { data, setUserData } = useUserData();
 
   const handleLogout = (e: React.FormEvent) => {
     e.preventDefault();
 
-    resetLocalStorageData(USER_LOALSTORAGE_KEY);
-
-    setRole(null);
+    resetLocalStorageData(USER_LOCALSTORAGE_KEY);
+    setUserData(null);
 
     // Navigating to Home Page
     navigate("/");
@@ -48,7 +47,7 @@ export default function Header() {
             >
               Events
             </Link>
-            {role == USER_ROLES.ORGANIZER && (
+            {data?.user?.role == USER_ROLES.ORGANIZER && (
               <Link
                 to="/dashboard"
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -58,7 +57,7 @@ export default function Header() {
             )}
           </nav>
 
-          {role ? (
+          {data?.user?.role ? (
             <div className="flex items-center space-x-4">
               <Link
                 to="/"

@@ -14,6 +14,14 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import { useUserData } from "@/context/user";
+import { USER_ROLES } from "@/constants/user";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { createOrder, updateOrder } from "@/api/order";
 import { createPayment } from "@/api/payment";
 
@@ -83,13 +91,17 @@ const mockEvent: Event = {
 };
 
 export default function EventDetail() {
+  const { data } = useUserData();
   const { id } = useParams();
+
   const [selectedTickets, setSelectedTickets] = useState<
     Record<string, number>
   >({});
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [showLoginOverlay, setShowLoginOverlay] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
-  const event = mockEvent;
+
+  const event = mockEvent; // TODO: fetch by ID later
 
   const handleTicketQuantityChange = (categoryId: string, change: number) => {
     setSelectedTickets((prev) => {
@@ -155,10 +167,8 @@ export default function EventDetail() {
       image: event.image,
       handler: async function (response: any) {
         try {
-          // ✅ Update Order
           await updateOrder(orderId, { payment_status: "paid" });
 
-          // ✅ Create Payment Record
           await createPayment({
             order_id: orderId,
             method: "upi",
@@ -200,7 +210,7 @@ export default function EventDetail() {
       const total = getTotalAmount();
 
       const order = await createOrder({
-        user_id: 1, // Replace with actual user ID from auth
+        user_id: 1, // TODO: replace with actual user ID
         event_id: Number(event.id),
         coupon_id: null,
         total_amount: total,
@@ -230,7 +240,13 @@ export default function EventDetail() {
           Back to Events
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div
+          className={`grid grid-cols-1 ${
+            data?.user?.role === USER_ROLES.ORGANIZER
+              ? "lg:grid-cols-1"
+              : "lg:grid-cols-3"
+          } gap-8`}
+        >
           {/* Event Details */}
           <div className="lg:col-span-2 space-y-6">
             <div>
@@ -299,98 +315,190 @@ export default function EventDetail() {
             </Card>
           </div>
 
-          {/* Booking Section */}
-          <div className="space-y-6">
-            <Card className="sticky top-4">
-              <CardHeader>
-                <CardTitle>Select Tickets</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {event.ticketCategories.map((category) => (
-                  <div key={category.id} className="space-y-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-foreground">
-                          {category.name}
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                          {category.description}
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {category.remainingCount > 0
-                            ? `${category.remainingCount} tickets remaining`
-                            : "Sold out"}
-                        </p>
+          {/* Ticket Booking Section */}
+          {data?.user?.role === USER_ROLES.ATTENDEE && (
+            <div className="space-y-6">
+              <Card className="sticky top-4">
+                <CardHeader>
+                  <CardTitle>Select Tickets</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {event.ticketCategories.map((category) => (
+                    <div key={category.id} className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground">
+                            {category.name}
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            {category.description}
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {category.remainingCount > 0
+                              ? `${category.remainingCount} tickets remaining`
+                              : "Sold out"}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-lg">${category.price}</p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-lg">${category.price}</p>
-                      </div>
+
+                      {category.remainingCount > 0 && (
+                        <div className="flex items-center justify-between bg-muted rounded-lg p-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handleTicketQuantityChange(category.id, -1)
+                            }
+                            disabled={!selectedTickets[category.id]}
+                          >
+                            <Minus className="w-3 h-3" />
+                          </Button>
+
+                          <span className="px-4 font-medium">
+                            {selectedTickets[category.id] || 0}
+                          </span>
+
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handleTicketQuantityChange(category.id, 1)
+                            }
+                            disabled={
+                              (selectedTickets[category.id] || 0) >=
+                              Math.min(category.remainingCount, 10)
+                            }
+                          >
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      )}
+
+                      {category.remainingCount === 0 && (
+                        <Button disabled className="w-full">
+                          Sold Out
+                        </Button>
+                      )}
+
+                      <Separator />
                     </div>
+                  ))}
 
-                    {category.remainingCount > 0 && (
-                      <div className="flex items-center justify-between bg-muted rounded-lg p-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            handleTicketQuantityChange(category.id, -1)
-                          }
-                          disabled={!selectedTickets[category.id]}
-                        >
-                          <Minus className="w-3 h-3" />
-                        </Button>
-                        <span className="px-4 font-medium">
-                          {selectedTickets[category.id] || 0}
-                        </span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            handleTicketQuantityChange(category.id, 1)
-                          }
-                          disabled={
-                            (selectedTickets[category.id] || 0) >=
-                            Math.min(category.remainingCount, 10)
-                          }
-                        >
-                          <Plus className="w-3 h-3" />
-                        </Button>
+                  {getTotalTickets() > 0 ? (
+                    <div className="space-y-4 pt-4 border-t">
+                      <div className="flex justify-between font-semibold">
+                        <span>Total ({getTotalTickets()} tickets)</span>
+                        <span>${getTotalAmount()}</span>
                       </div>
-                    )}
-
-                    {category.remainingCount === 0 && (
-                      <Button disabled className="w-full">
-                        Sold Out
+                      <Button className="w-full" onClick={handleBookNow}>
+                        Book Now
                       </Button>
-                    )}
-
-                    <Separator />
-                  </div>
-                ))}
-
-                {getTotalTickets() > 0 && (
-                  <div className="space-y-4 pt-4 border-t">
-                    <div className="flex justify-between font-semibold">
-                      <span>Total ({getTotalTickets()} tickets)</span>
-                      <span>${getTotalAmount()}</span>
                     </div>
+                  ) : (
+                    <p className="text-center text-muted-foreground text-sm py-4">
+                      Select tickets to proceed with booking
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
-                    <Button className="w-full" onClick={handleBookNow}>
-                      Book Now
-                    </Button>
-                  </div>
-                )}
+          {/* If not logged in */}
+          {!data?.user?.role && (
+            <div className="space-y-6">
+              <Card className="sticky top-4">
+                <CardHeader>
+                  <CardTitle>Select Tickets</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {event.ticketCategories.map((category) => (
+                    <div key={category.id} className="space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground">
+                            {category.name}
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            {category.description}
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {category.remainingCount > 0
+                              ? `${category.remainingCount} tickets remaining`
+                              : "Sold out"}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-lg">${category.price}</p>
+                        </div>
+                      </div>
 
-                {getTotalTickets() === 0 && (
-                  <p className="text-center text-muted-foreground text-sm py-4">
-                    Select tickets to proceed with booking
+                      {category.remainingCount > 0 ? (
+                        <div className="flex items-center justify-between bg-muted rounded-lg p-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setShowLoginOverlay(true)}
+                          >
+                            <Minus className="w-3 h-3" />
+                          </Button>
+
+                          <span className="px-4 font-medium">0</span>
+
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setShowLoginOverlay(true)}
+                          >
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button disabled className="w-full">
+                          Sold Out
+                        </Button>
+                      )}
+
+                      <Separator />
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Login Overlay */}
+              <Dialog
+                open={showLoginOverlay}
+                onOpenChange={setShowLoginOverlay}
+              >
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="text-center">
+                      Please Login
+                    </DialogTitle>
+                  </DialogHeader>
+                  <p className="text-center text-muted-foreground mb-4">
+                    You need to login to book tickets.
                   </p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                  <Button
+                    className="w-full"
+                    onClick={() => {
+                      setShowLoginOverlay(false);
+                      // TODO: redirect to login page
+                    }}
+                  >
+                    Go to Login
+                  </Button>
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
         </div>
       </div>
 

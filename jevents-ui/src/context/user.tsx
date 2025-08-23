@@ -1,4 +1,11 @@
-import React, {
+import { USER_LOCALSTORAGE_KEY } from "@/constants/user";
+import {
+  getLocalStorageData,
+  resetLocalStorageData,
+  setLocalStorage,
+} from "@/lib/localStorage";
+import { User, UserLocalStorage } from "@/types/auth";
+import {
   createContext,
   useContext,
   useEffect,
@@ -6,58 +13,43 @@ import React, {
   ReactNode,
 } from "react";
 
-type UserLocalStorage = {
-  user: {
-    role: string;
-  };
-};
-
 type UserRoleContextType = {
-  role: string | null;
-  setRole: (role: string | null) => void;
+  data: UserLocalStorage | null;
+  setUserData: (role: UserLocalStorage | null) => void;
 };
 
-const UserRoleContext = createContext<UserRoleContextType | undefined>(
+const UserDataContext = createContext<UserRoleContextType | undefined>(
   undefined,
 );
 
-export const USER_LOCALSTORAGE_KEY = "user-data";
-
-function getLocalStorageData<T>(key: string): T | null {
-  const item = localStorage.getItem(key);
-  return item ? (JSON.parse(item) as T) : null;
-}
-
-export function UserRoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<string | null>(null);
+export function UserDataProvider({ children }: { children: ReactNode }) {
+  const [data, setData] = useState<UserLocalStorage | null>(null);
 
   useEffect(() => {
     const data = getLocalStorageData<UserLocalStorage | null>(
       USER_LOCALSTORAGE_KEY,
     );
-    setRole(data?.user.role ?? null);
+
+    setData(data ?? null);
   }, []);
 
   useEffect(() => {
-    if (role) {
-      localStorage.setItem(
-        USER_LOCALSTORAGE_KEY,
-        JSON.stringify({ user: { role } }),
-      );
+    if (data) {
+      setLocalStorage<UserLocalStorage>(USER_LOCALSTORAGE_KEY, data);
     } else {
-      localStorage.removeItem(USER_LOCALSTORAGE_KEY);
+      resetLocalStorageData(USER_LOCALSTORAGE_KEY);
     }
-  }, [role]);
+  }, [data]);
 
   return (
-    <UserRoleContext.Provider value={{ role, setRole }}>
+    <UserDataContext.Provider value={{ data: data, setUserData: setData }}>
       {children}
-    </UserRoleContext.Provider>
+    </UserDataContext.Provider>
   );
 }
 
-export function useUserRole() {
-  const context = useContext(UserRoleContext);
+export function useUserData() {
+  const context = useContext(UserDataContext);
   if (!context) {
     throw new Error("useUserRole must be used inside <UserRoleProvider>");
   }
