@@ -4,29 +4,39 @@ import { Link } from "react-router-dom";
 import { EventTime } from "./EventTime";
 
 interface EventCardProps {
+  id: number;
   title: string;
   description: string;
   location: string;
   start_time: string;
   end_time: string;
   category: string;
-  image?: File | null;
+  image_url?: string | null;
 }
 
 export default function EventCard({
+  id,
   title,
   description,
   location,
   start_time,
   end_time,
   category,
-  image,
+  image_url,
 }: EventCardProps) {
   return (
     <div className="event-card cursor-pointer group">
       <div className="aspect-video bg-gradient-to-br from-primary/10 to-accent/5 rounded-lg mb-4 overflow-hidden">
         <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center">
-          <Calendar className="h-12 w-12 text-primary/60" />
+          {image_url ? (
+            <img
+              src={image_url}
+              alt="Event cover"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Calendar className="h-12 w-12 text-primary/60" />
+          )}
         </div>
       </div>
 
@@ -63,7 +73,7 @@ export default function EventCard({
       </div>
 
       <div className="flex items-center justify-between">
-        <Link to="/event/:id">
+        <Link to={`/event/${id}`}>
           <Button className="btn-accent">View Details</Button>
         </Link>
       </div>

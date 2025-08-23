@@ -4,6 +4,8 @@ class Order < ApplicationRecord
   belongs_to :coupon, optional: true
 
   has_many :payments, dependent: :destroy
+  has_many :bookings, dependent: :nullify
+  has_many :tickets, through: :bookings
 
   enum :payment_status, {
     pending: 0,

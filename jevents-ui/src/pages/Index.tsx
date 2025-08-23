@@ -10,49 +10,10 @@ import {
   CreditCard,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEvents } from "@/hooks/useEvents";
 
 const Index = () => {
-  const featuredEvents = [
-    {
-      title: "Tech Innovation Summit 2024",
-      description:
-        "Join industry leaders and innovators for a day of cutting-edge technology discussions and networking opportunities.",
-      date: "March 15, 2024",
-      location: "San Francisco, CA",
-      price: "$299",
-      organizer: "TechCorp Events",
-      attendees: 487,
-      rating: 4.9,
-      image: "/api/placeholder/400/300",
-      category: "Technology",
-    },
-    {
-      title: "Creative Arts Workshop",
-      description:
-        "Explore your creative side with hands-on workshops led by professional artists and designers.",
-      date: "March 22, 2024",
-      location: "New York, NY",
-      price: "$89",
-      organizer: "Creative Studios",
-      attendees: 156,
-      rating: 4.8,
-      image: "/api/placeholder/400/300",
-      category: "Arts",
-    },
-    {
-      title: "Startup Networking Event",
-      description:
-        "Connect with entrepreneurs, investors, and innovators in the startup ecosystem.",
-      date: "April 5, 2024",
-      location: "Austin, TX",
-      price: "Free",
-      organizer: "Startup Community",
-      attendees: 234,
-      rating: 4.7,
-      image: "/api/placeholder/400/300",
-      category: "Business",
-    },
-  ];
+  const { events } = useEvents(null);
 
   const features = [
     {
@@ -99,7 +60,7 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredEvents.map((event, index) => (
+            {events.slice(0, 4).map((event, index) => (
               <EventCard key={index} {...event} />
             ))}
           </div>
