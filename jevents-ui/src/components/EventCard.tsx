@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { EventTime } from "./EventTime";
 
 interface EventCardProps {
+  id: number;
   title: string;
   description: string;
   location: string;
@@ -14,6 +15,7 @@ interface EventCardProps {
 }
 
 export default function EventCard({
+  id,
   title,
   description,
   location,
@@ -71,7 +73,7 @@ export default function EventCard({
       </div>
 
       <div className="flex items-center justify-between">
-        <Link to="/event/:id">
+        <Link to={`/event/${id}`}>
           <Button className="btn-accent">View Details</Button>
         </Link>
       </div>

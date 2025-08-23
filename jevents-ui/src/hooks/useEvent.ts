@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { EventDetail } from "@/types/events";
+import { Event } from "@/types/events";
 import { getEvent } from "@/api/events";
 
 interface UseEventsResult {
-  event: EventDetail;
+  event: Event;
   loading: boolean;
   error: string | null;
   refetch: () => void;
 }
 
-export function useEvent(userId: string | null): UseEventsResult {
-  const [event, setEvent] = useState<EventDetail>(null);
+export function useEvent(eventId: string | null): UseEventsResult {
+  const [event, setEvent] = useState<Event>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +19,7 @@ export function useEvent(userId: string | null): UseEventsResult {
       setLoading(true);
       setError(null);
 
-      const res = await getEvent(userId);
+      const res = await getEvent(eventId);
       setEvent(res);
     } catch (err) {
       setError(err.message || "Failed to fetch events");
@@ -30,7 +30,7 @@ export function useEvent(userId: string | null): UseEventsResult {
 
   useEffect(() => {
     fetchEvent();
-  }, [userId]);
+  }, [eventId]);
 
   return { event: event, loading, error, refetch: fetchEvent };
 }

@@ -11,11 +11,8 @@ export interface CreateEventRequest {
   tickets: Ticket[];
 }
 
-export interface EventDetail {
-  event: Event;
-}
-
 export interface Event {
+  id: number;
   title: string;
   description: string;
   location: string;
