@@ -30,11 +30,7 @@ export default function EventDetail() {
   const [selectedTickets, setSelectedTickets] = useState<
     Record<number, number>
   >({});
-<<<<<<< Updated upstream
-  const navigate = useNavigate();
-=======
   const [ticketNames, setTicketNames] = useState<Record<number, string[]>>({});
->>>>>>> Stashed changes
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
   const [showLoginOverlay, setShowLoginOverlay] = useState(false);
@@ -48,23 +44,11 @@ export default function EventDetail() {
 
   const handleTicketQuantityChange = (ticketId: number, change: number) => {
     setSelectedTickets((prev) => {
-<<<<<<< Updated upstream
-      const currentQuantity = prev[ticketId] || 0;
-      const category = event.tickets.find((c) => c.id === ticketId);
-      const maxQuantity = Math.min(category?.available || 0, 10);
-      const newQuantity = Math.max(
-        0,
-        Math.min(maxQuantity, currentQuantity + change)
-      );
-
-      if (newQuantity === 0) {
-=======
       const current = prev[ticketId] || 0;
       const category = event!.tickets.find((c) => c.id === ticketId);
       const maxQty = Math.min(category?.available || 0, 10);
       const next = Math.max(0, Math.min(maxQty, current + change));
       if (next === 0) {
->>>>>>> Stashed changes
         const { [ticketId]: _, ...rest } = prev;
         return rest;
       }
@@ -72,23 +56,6 @@ export default function EventDetail() {
     });
   };
 
-<<<<<<< Updated upstream
-  const getTotalAmount = () => {
-    return Object.entries(selectedTickets).reduce(
-      (total, [ticketId, quantity]) => {
-        const category = event.tickets.find((c) => String(c.id) === ticketId);
-        return total + (Number(category?.price) || 0) * quantity;
-      },
-      0
-    );
-  };
-
-  const getTotalTickets = () => {
-    return Object.values(selectedTickets).reduce(
-      (total, qty) => total + qty,
-      0
-    );
-=======
   const getTotalAmount = () =>
     Object.entries(selectedTickets).reduce((sum, [id, qty]) => {
       const ticket = event!.tickets.find((t) => String(t.id) === id);
@@ -146,7 +113,6 @@ export default function EventDetail() {
       console.error("Create order failed:", err);
       alert("Failed to create order. Please try again.");
     }
->>>>>>> Stashed changes
   };
 
   const bookings: Booking[] = Object.entries(selectedTickets).flatMap(
@@ -196,13 +162,7 @@ export default function EventDetail() {
             amount: amountPaise / 100,
             status: "success",
           });
-<<<<<<< Updated upstream
-
-          await createBookings({ order_id: orderId, bookings: bookings });
-          navigate("/history");
-=======
           await createBookings({ bookings });
->>>>>>> Stashed changes
         } catch (err) {
           console.error("Post-payment failure", err);
           alert("Payment succeeded, but saving order failed.");
@@ -225,65 +185,10 @@ export default function EventDetail() {
       theme: { color: "#3399cc" },
     };
 
-<<<<<<< Updated upstream
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  };
-
-  const handleBookNow = async () => {
-    try {
-      const total = getTotalAmount();
-
-      const order = await createOrder({
-        user_id: 1, // TODO: replace with actual user ID
-        event_id: Number(event.id),
-        coupon_id: null,
-        total_amount: total,
-        discount_applied: 0,
-        final_amount: total,
-        payment_status: "pending",
-      });
-
-      setOrderId(order.id);
-      setIsBookingModalOpen(true);
-    } catch (error) {
-      console.error("Create order failed:", error);
-      alert("Failed to create order. Please try again.");
-    }
-  };
-
-  const handleTicketNameChange = (
-    ticketId: number,
-    index: number,
-    name: string
-  ) => {
-    setTicketNames((prev) => {
-      const currentNames = prev[ticketId] || [];
-      const updatedNames = [...currentNames];
-      updatedNames[index] = name;
-      return { ...prev, [ticketId]: updatedNames };
-    });
-  };
-
-  // Inside Booking Modal
-  const bookings = Object.entries(selectedTickets).flatMap(
-    ([ticketIdStr, quantity]) => {
-      const ticketId = Number(ticketIdStr);
-      const names = ticketNames[ticketId] || [];
-      return Array.from({ length: quantity }).map((_, idx) => ({
-        ticket_id: ticketId,
-        name: names[idx] || "",
-      }));
-    }
-  );
-
-  if (!event) return <></>;
-=======
     new window.Razorpay(options).open();
   };
 
   if (!event) return null;
->>>>>>> Stashed changes
 
   return (
     <div className="min-h-screen bg-background">
@@ -393,81 +298,6 @@ export default function EventDetail() {
                           ₹{ticket.price} | Available: {ticket.available}
                         </p>
                       </div>
-<<<<<<< Updated upstream
-
-                      {ticket.available > 0 && (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between bg-muted rounded-lg p-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() =>
-                                handleTicketQuantityChange(ticket.id, -1)
-                              }
-                              disabled={!selectedTickets[ticket.id]}
-                            >
-                              <Minus className="w-3 h-3" />
-                            </Button>
-
-                            <span className="px-4 font-medium">
-                              {selectedTickets[ticket.id] || 0}
-                            </span>
-
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() =>
-                                handleTicketQuantityChange(ticket.id, 1)
-                              }
-                              disabled={
-                                (selectedTickets[ticket.id] || 0) >=
-                                Math.min(ticket.available, 10)
-                              }
-                            >
-                              <Plus className="w-3 h-3" />
-                            </Button>
-                          </div>
-
-                          {/* Render input fields for each selected ticket */}
-                          {Array.from({
-                            length: selectedTickets[ticket.id] || 0,
-                          }).map((_, idx) => (
-                            <input
-                              key={idx}
-                              type="text"
-                              placeholder={`Name for ticket ${idx + 1}`}
-                              value={ticketNames[ticket.id]?.[idx] || ""}
-                              onChange={(e) =>
-                                handleTicketNameChange(
-                                  ticket.id,
-                                  idx,
-                                  e.target.value
-                                )
-                              }
-                              className="w-full border rounded p-2 mt-1"
-                            />
-                          ))}
-                        </div>
-                      )}
-
-                      {ticket.available === 0 && (
-                        <Button disabled className="w-full">
-                          Sold Out
-                        </Button>
-                      )}
-
-                      <Separator />
-                    </div>
-                  ))}
-
-                  {getTotalTickets() > 0 ? (
-                    <div className="space-y-4 pt-4 border-t">
-                      <div className="flex justify-between font-semibold">
-                        <span>Total ({getTotalTickets()} tickets)</span>
-                        <span>₹{getTotalAmount()}</span>
-=======
                       <div className="flex items-center space-x-2">
                         <Button
                           size="sm"
@@ -496,7 +326,6 @@ export default function EventDetail() {
                         >
                           <Plus className="w-3 h-3" />
                         </Button>
->>>>>>> Stashed changes
                       </div>
                     </div>
                   ))}
@@ -537,75 +366,6 @@ export default function EventDetail() {
                 <CardHeader>
                   <CardTitle>Apply Coupon</CardTitle>
                 </CardHeader>
-<<<<<<< Updated upstream
-                <CardContent className="space-y-4">
-                  {event.tickets.map((ticket) => (
-                    <div key={ticket.id} className="space-y-3">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-foreground">
-                            {ticket.name}
-                          </h4>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {ticket.available > 0
-                              ? `${ticket.available} tickets remaining`
-                              : "Sold out"}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-lg">₹{ticket.price}</p>
-                        </div>
-                      </div>
-
-                      {ticket.available > 0 ? (
-                        <div className="flex items-center justify-between bg-muted rounded-lg p-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => setShowLoginOverlay(true)}
-                          >
-                            <Minus className="w-3 h-3" />
-                          </Button>
-
-                          <span className="px-4 font-medium">0</span>
-
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => setShowLoginOverlay(true)}
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <Button disabled className="w-full">
-                          Sold Out
-                        </Button>
-                      )}
-
-                      <Separator />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Login Overlay */}
-              <Dialog
-                open={showLoginOverlay}
-                onOpenChange={setShowLoginOverlay}
-              >
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle className="text-center">
-                      Please Login
-                    </DialogTitle>
-                  </DialogHeader>
-                  <p className="text-center text-muted-foreground mb-4">
-                    You need to login to book tickets.
-                  </p>
-=======
                 <CardContent className="space-y-2">
                   <input
                     type="text"
@@ -615,7 +375,6 @@ export default function EventDetail() {
                     className="w-full rounded border px-3 py-2"
                     disabled={isApplyingCoupon}
                   />
->>>>>>> Stashed changes
                   <Button
                     onClick={handleApplyCoupon}
                     disabled={isApplyingCoupon || !couponCode.trim()}
@@ -674,11 +433,7 @@ export default function EventDetail() {
                       <span>
                         {ticket?.name} × {qty}
                       </span>
-<<<<<<< Updated upstream
-                      <span>₹{(Number(ticket?.price) || 0) * quantity}</span>
-=======
                       <span>{(Number(ticket?.price) || 0) * qty}₹</span>
->>>>>>> Stashed changes
                     </div>
                   );
                 })}
