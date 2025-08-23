@@ -50,7 +50,6 @@ export default function Login() {
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center space-x-2">
             <Link to="/" className="flex gap-2">
-              <Calendar className="h-8 w-8 text-primary" />
               <span className="text-2xl font-bold gradient-text">JEvents</span>
             </Link>
           </div>

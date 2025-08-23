@@ -26,7 +26,6 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <Link to="/" className="flex gap-2">
-                <Calendar className="h-8 w-8 text-primary" />
                 <span className="text-xl font-bold gradient-text">JEvents</span>
               </Link>
             </div>
