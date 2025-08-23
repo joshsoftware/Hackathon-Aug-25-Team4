@@ -1,5 +1,5 @@
 class EventsController < ApplicationController
-  skip_before_action :authorize_request, only: [:index, :show]
+  skip_before_action :authenticate_request, only: [:index, :show]
 
   # GET /events - Get all events
 	def index
