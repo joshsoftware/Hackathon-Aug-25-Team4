@@ -1,4 +1,4 @@
-import { axiosPublic } from "@/axios/instance";
+import { axiosPrivate, axiosPublic } from "@/axios/instance";
 import {
   BookingsRequest,
   BookingsResponse,
@@ -24,7 +24,7 @@ export const getEvent = async (eventID: string): Promise<EventDetail> => {
 export const createBookings = async (
   body: BookingsRequest,
 ): Promise<BookingsResponse> => {
-  return axiosPublic
+  return axiosPrivate
     .post<BookingsResponse>("/bookings/bulk_create", body)
     .then((res) => res.data);
 };
