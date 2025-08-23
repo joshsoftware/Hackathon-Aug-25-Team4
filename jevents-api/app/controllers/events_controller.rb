@@ -4,13 +4,21 @@ class EventsController < ApplicationController
   # GET /events - Get all events
   def index
     user_id = params[:user_id]
+
     if user_id.present?
       events = Event.joins(:event_organizers).where(event_organizers: { user_id: user_id })
-    else
-      events = Event.all
-    end
+			total_revenue = Order.where(event_id: events.pluck(:id), payment_status: 1).sum(:final_amount)
+			attendees = Order.where(event_id: events.pluck(:id)).select(:user_id).distinct.count
 
-    render json: events, status: :ok
+			render json: {
+				events: events.as_json,
+				total_revenue: total_revenue,
+				attendees: attendees
+			}, status: :ok
+		else
+			events = Event.all
+			render json: events, status: :ok
+		end
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
@@ -18,6 +26,7 @@ class EventsController < ApplicationController
 
   # GET /events/:id - Get specific event
   def show
+		@event = Event.find(params[:id])
     event_data = @event.as_json(include: :tickets)
 
     if current_user.nil?
