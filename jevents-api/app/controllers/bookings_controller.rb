@@ -14,6 +14,8 @@ class BookingsController < ApplicationController
 
       if booking.save
         created_bookings << booking
+
+        BookingMailer.confirmation_email(booking).deliver_now
       else
         errors << { ticket_id: booking_param[:ticket_id], errors: booking.errors.full_messages }
       end
