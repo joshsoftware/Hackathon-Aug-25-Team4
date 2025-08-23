@@ -145,17 +145,6 @@ export default function OrganizerDashboard() {
                         {event.attendees} attendees
                       </p>
                     </div>
-                    <span
-                      className={`ml-4 px-2 py-1 text-xs font-medium rounded-full ${
-                        event.status === "Active"
-                          ? "bg-accent/10 text-accent"
-                          : event.status === "Selling"
-                          ? "bg-primary/10 text-primary"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {event.status}
-                    </span>
                   </div>
                 ))}
               </div>
