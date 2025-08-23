@@ -3,6 +3,7 @@ class OrdersController < ApplicationController
 
   # GET /orders
   def index
+    # debugger
     orders = current_user.orders.includes(:bookings)
 
     render json: orders.as_json(

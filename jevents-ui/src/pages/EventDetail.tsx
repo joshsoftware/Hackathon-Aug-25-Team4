@@ -25,6 +25,7 @@ import { CreateCoupon } from "@/components/CreateCoupon";
 
 export default function EventDetail() {
   const { data } = useUserData();
+  const navigate = useNavigate();
   const { event } = useEvent();
 
   const [selectedTickets, setSelectedTickets] = useState<
@@ -163,6 +164,7 @@ export default function EventDetail() {
             status: "success",
           });
           await createBookings({ bookings });
+          navigate('/history');
         } catch (err) {
           console.error("Post-payment failure", err);
           alert("Payment succeeded, but saving order failed.");

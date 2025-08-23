@@ -3,8 +3,8 @@ class CouponsController < ApplicationController
   before_action :authorize_organizer!, only: [:create, :update, :destroy]
 
   def apply
-    coupon = @event.coupons.find_by(code: params[:code])
-  
+    coupon = @event.coupons.find_by(code: params[:coupon_code])
+    # debugger
     if coupon.nil?
       return render json: { error: "Invalid coupon" }, status: :not_found
     end
