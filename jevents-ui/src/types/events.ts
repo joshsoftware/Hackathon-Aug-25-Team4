@@ -34,6 +34,7 @@ export interface Ticket {
   opening_start: string;
   opening_end: string;
   capacity: number;
+  available: number;
 }
 
 export interface EventDetail {
@@ -47,6 +48,7 @@ export interface EventDetail {
   category: string;
   created_at: string;
   updated_at: string;
+  image_url?: string | null;
   tickets: TicketDetail[];
   coupons: CoupounDetail[] | null;
   organizers: User[];

@@ -18,15 +18,12 @@ export function useEvent(): UseEventsResult {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("ho");
-
     const fetchEvent = async () => {
       try {
         setLoading(true);
         setError(null);
 
         const res = await getEvent(id);
-        console.log("ho", res);
         setEvent(res);
       } catch (err) {
         setError(err.message || "Failed to fetch events");

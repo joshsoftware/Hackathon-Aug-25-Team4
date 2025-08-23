@@ -23,7 +23,6 @@ export default function EventDetail() {
   const { data } = useUserData();
   const { event } = useEvent();
 
-
   const [selectedTickets, setSelectedTickets] = useState<
     Record<number, number>
   >({});
@@ -143,6 +142,8 @@ export default function EventDetail() {
     }
   };
 
+  if (!event) return <></>;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -166,11 +167,19 @@ export default function EventDetail() {
           {/* Event Details */}
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <div className="aspect-video bg-gradient-subtle rounded-lg mb-6 flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>Event Image</p>
-                </div>
+              <div className="aspect-video bg-gradient-subtle rounded-lg mb-6 flex items-center justify-center overflow-hidden">
+                {event?.image_url ? (
+                  <img
+                    src={event.image_url}
+                    alt="Event"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-center text-muted-foreground">
+                    <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>Event Image</p>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-start justify-between mb-4">
