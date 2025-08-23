@@ -16,13 +16,13 @@ export const getEvents = async (userId: string | null): Promise<Event[]> => {
 };
 
 export const getEvent = async (eventID: string): Promise<EventDetail> => {
-  return axiosPublic
+  return axiosPrivate 
     .get<EventDetail>(`/events/${eventID}`)
     .then((res) => res.data);
 };
 
 export const createBookings = async (
-  body: BookingsRequest,
+  body: BookingsRequest
 ): Promise<BookingsResponse> => {
   return axiosPrivate
     .post<BookingsResponse>("/bookings/bulk_create", body)
