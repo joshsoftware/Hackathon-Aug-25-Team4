@@ -1,5 +1,13 @@
 export interface CreateEventRequest {
-  event: Event;
+  event: {
+    title: string;
+    description: string;
+    location: string;
+    start_time: string;
+    end_time: string;
+    category: string;
+    image?: File | null;
+  };
   tickets: Ticket[];
 }
 
@@ -14,7 +22,7 @@ export interface Event {
   start_time: string;
   end_time: string;
   category: string;
-  image?: File | null;
+  image_url?: string | null;
 }
 
 export interface Ticket {
