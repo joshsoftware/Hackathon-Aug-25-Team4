@@ -68,7 +68,6 @@ class CouponsController < ApplicationController
   private
 
   def set_event
-    debugger
     @event = Event.find(params[:event_id])
   end
 
