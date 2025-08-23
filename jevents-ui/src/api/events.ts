@@ -2,9 +2,12 @@ import { axiosPublic } from "@/axios/instance";
 import { Event, EventDetail } from "@/types/events";
 
 export const getEvents = async (userId: string | null): Promise<Event[]> => {
-  return axiosPublic
-    .get<Event[]>(`/events?user_id=${userId}`)
-    .then((res) => res.data);
+  let url = `/events`;
+  if (userId) {
+    url = `/events?user_id=${userId}`;
+  }
+
+  return axiosPublic.get<Event[]>(url).then((res) => res.data);
 };
 
 export const getEvent = async (eventID: string): Promise<EventDetail> => {
