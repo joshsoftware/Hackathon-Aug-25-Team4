@@ -56,6 +56,7 @@ class OrdersController < ApplicationController
   # PATCH/PUT /orders/:id
   def update
     if @order.update(order_params)
+      manage_ticket_availability if @order.payment_status == "paid"
       render json: @order
     else
       render json: { errors: @order.errors.full_messages }, status: :unprocessable_entity
@@ -99,5 +100,14 @@ class OrdersController < ApplicationController
       :total_amount, :discount_applied,
       :final_amount, :payment_status
     )
+  end
+  
+  def manage_ticket_availability
+    @order.bookings.each do |booking|
+      ticket = booking.ticket
+      if ticket.present? && ticket.available.to_i > 0
+        ticket.decrement!(:available, 1) # decrease by 1 and save
+      end
+    end
   end
 end
