@@ -52,7 +52,7 @@ class EventsController < ApplicationController
           @event.tickets.build(
             ticket_param
               .merge!(user_id: current_user.id)
-              .permit(:name, :price, :user_id, :status, :capacity, :opening_start, :opening_end)
+              .permit(:name, :price, :user_id, :status, :capacity, :available, :opening_start, :opening_end)
           )
         end
       end
@@ -89,7 +89,7 @@ class EventsController < ApplicationController
       :category,
       tickets_attributes: [
         :id, :name, :price, :status, :user_id,
-        :capacity, :opening_start, :opening_end, :_destroy
+        :capacity, :available, :opening_start, :opening_end, :_destroy
       ]
     )
   end
