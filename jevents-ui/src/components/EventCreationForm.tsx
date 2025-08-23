@@ -112,7 +112,6 @@ export default function EventCreationForm() {
           Authorization: data.token,
         },
       });
-      console.log("Event created:", res.data);
     } catch (err) {
       console.error("Error creating event:", err);
     }

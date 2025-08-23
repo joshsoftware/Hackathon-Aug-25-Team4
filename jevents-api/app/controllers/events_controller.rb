@@ -1,32 +1,31 @@
 class EventsController < ApplicationController
-  skip_before_action :authenticate_request, only: [:index, :show]
+  skip_before_action :authenticate_request, only: [ :index, :show ]
 
   # GET /events - Get all events
-	def index
+  def index
     user_id = params[:user_id]
-  
     if user_id.present?
-      events = Event.where(user_id: user_id)
+      events = Event.joins(:event_organizers).where(event_organizers: { user_id: user_id })
     else
       events = Event.all
     end
-  
+
     render json: events, status: :ok
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
-  
+
 
   # GET /events/:id - Get specific event
   def show
     event_data = @event.as_json(include: :tickets)
-  
+
     if current_user.nil?
       event_data["coupons"] = nil
     elsif current_user.role == "organizer" && @event.organizers.include?(current_user)
       event_data["coupons"] = @event.coupons.as_json
     end
-  
+
     render json: event_data, status: :ok
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
@@ -58,7 +57,7 @@ class EventsController < ApplicationController
 
         render json: @event.as_json(
           include: :tickets,
-          methods: [:image_url]
+          methods: [ :image_url ]
         ), status: :created
       else
         render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
