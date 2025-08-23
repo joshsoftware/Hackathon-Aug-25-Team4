@@ -29,6 +29,7 @@ class EventsController < ApplicationController
 		@event = Event.find(params[:id])
     event_data = @event.as_json(include: :tickets)
     event_data["organizers"] = @event.organizers.as_json(only: [ :id, :name, :email ])
+    event_data["image_url"] = @event.image_url
     if current_user.nil?
       event_data["coupons"] = nil
     elsif current_user.role == "organizer" && @event.organizers.include?(current_user)
