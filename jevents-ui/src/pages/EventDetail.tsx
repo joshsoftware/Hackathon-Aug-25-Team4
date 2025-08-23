@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +28,7 @@ export default function EventDetail() {
   const [selectedTickets, setSelectedTickets] = useState<
     Record<number, number>
   >({});
+  const navigate = useNavigate();
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [showLoginOverlay, setShowLoginOverlay] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
@@ -40,7 +41,7 @@ export default function EventDetail() {
       const maxQuantity = Math.min(category?.available || 0, 10);
       const newQuantity = Math.max(
         0,
-        Math.min(maxQuantity, currentQuantity + change),
+        Math.min(maxQuantity, currentQuantity + change)
       );
 
       if (newQuantity === 0) {
@@ -58,14 +59,14 @@ export default function EventDetail() {
         const category = event.tickets.find((c) => String(c.id) === ticketId);
         return total + (Number(category?.price) || 0) * quantity;
       },
-      0,
+      0
     );
   };
 
   const getTotalTickets = () => {
     return Object.values(selectedTickets).reduce(
       (total, qty) => total + qty,
-      0,
+      0
     );
   };
 
@@ -95,8 +96,8 @@ export default function EventDetail() {
             status: "success",
           });
 
-          // Create bookings
           await createBookings({ order_id: orderId, bookings: bookings });
+          navigate("/history");
         } catch (err) {
           console.error("Error saving payment/order:", err);
           alert("Payment succeeded, but order/payment update failed.");
@@ -147,7 +148,7 @@ export default function EventDetail() {
   const handleTicketNameChange = (
     ticketId: number,
     index: number,
-    name: string,
+    name: string
   ) => {
     setTicketNames((prev) => {
       const currentNames = prev[ticketId] || [];
@@ -166,7 +167,7 @@ export default function EventDetail() {
         ticket_id: ticketId,
         name: names[idx] || "",
       }));
-    },
+    }
   );
 
   if (!event) return <></>;
@@ -340,7 +341,7 @@ export default function EventDetail() {
                                 handleTicketNameChange(
                                   ticket.id,
                                   idx,
-                                  e.target.value,
+                                  e.target.value
                                 )
                               }
                               className="w-full border rounded p-2 mt-1"
