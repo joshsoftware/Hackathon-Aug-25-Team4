@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { createCoupon, CouponCreateRequest } from "@/api/coupon"; // adjust path
 import { Button } from "@/components/ui/button";
+import { useCoupons } from "@/hooks/useCoupouns";
 
 interface CreateCouponProps {
   eventId: number;
 }
 
 export const CreateCoupon: React.FC<CreateCouponProps> = ({ eventId }) => {
+  const { coupons } = useCoupons(eventId);
+
   const [coupon, setCoupon] = useState<CouponCreateRequest>({
     code: "",
     discount_value: 0,
@@ -23,7 +26,7 @@ export const CreateCoupon: React.FC<CreateCouponProps> = ({ eventId }) => {
   const [message, setMessage] = useState<string | null>(null);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value, type, checked } = e.target;
     setCoupon((prev) => ({
@@ -32,8 +35,8 @@ export const CreateCoupon: React.FC<CreateCouponProps> = ({ eventId }) => {
         type === "checkbox"
           ? checked
           : name === "discount_value" || name === "usage_limit"
-          ? Number(value)
-          : value,
+            ? Number(value)
+            : value,
     }));
   };
 
@@ -47,7 +50,7 @@ export const CreateCoupon: React.FC<CreateCouponProps> = ({ eventId }) => {
       // Optionally reset form here
     } catch (error: any) {
       setMessage(
-        error.response?.data?.message || "Failed to create coupon. Try again."
+        error.response?.data?.message || "Failed to create coupon. Try again.",
       );
     } finally {
       setLoading(false);
@@ -178,6 +181,12 @@ export const CreateCoupon: React.FC<CreateCouponProps> = ({ eventId }) => {
         <Button type="submit" disabled={loading}>
           {loading ? "Creating..." : "Create Coupon"}
         </Button>
+      </div>
+
+      <div>
+        {coupons.map((coupon) => (
+          <div>{coupon.name}</div>
+        ))}
       </div>
     </form>
   );
