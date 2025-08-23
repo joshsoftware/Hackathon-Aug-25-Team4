@@ -26,7 +26,7 @@ class EventsController < ApplicationController
 
   # GET /events/:id - Get specific event
   def show
-		@event = Event.find(params[:id])
+	@event = Event.find(params[:id])
     event_data = @event.as_json(include: :tickets)
     event_data["organizers"] = @event.organizers.as_json(only: [ :id, :name, :email ])
     event_data["image_url"] = @event.image_url

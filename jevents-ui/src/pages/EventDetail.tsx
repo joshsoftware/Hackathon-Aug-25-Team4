@@ -5,15 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  Calendar,
-  MapPin,
-  Users,
-  Clock,
-  ArrowLeft,
-  Plus,
-  Minus,
-} from "lucide-react";
+import { Calendar, MapPin, Users, ArrowLeft, Plus, Minus } from "lucide-react";
 import { useUserData } from "@/context/user";
 import { USER_ROLES } from "@/constants/user";
 import {
@@ -24,130 +16,54 @@ import {
 } from "@/components/ui/dialog";
 import { createOrder, updateOrder } from "@/api/order";
 import { createPayment } from "@/api/payment";
-
-// --- Interfaces ---
-interface TicketCategory {
-  id: string;
-  name: string;
-  price: number;
-  totalCount: number;
-  remainingCount: number;
-  description?: string;
-}
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  location: string;
-  venue: string;
-  organizers: string[];
-  category: string;
-  image: string;
-  ticketCategories: TicketCategory[];
-}
-
-// --- Mock Data ---
-const mockEvent: Event = {
-  id: "1",
-  title: "Tech Innovation Summit 2024",
-  description: "...",
-  date: "2024-09-15",
-  time: "09:00 AM - 06:00 PM",
-  location: "San Francisco, CA",
-  venue: "Moscone Center, Hall A",
-  organizers: ["TechEvents Inc.", "Innovation Hub"],
-  category: "Technology",
-  image: "/placeholder.svg",
-  ticketCategories: [
-    {
-      id: "vip",
-      name: "VIP Access",
-      price: 299,
-      totalCount: 50,
-      remainingCount: 12,
-      description:
-        "Premium seating, exclusive networking session, complimentary lunch",
-    },
-    {
-      id: "standard",
-      name: "Standard",
-      price: 149,
-      totalCount: 200,
-      remainingCount: 87,
-      description: "Access to all sessions and networking area",
-    },
-    {
-      id: "student",
-      name: "Student",
-      price: 49,
-      totalCount: 100,
-      remainingCount: 45,
-      description: "Special rate for students (ID verification required)",
-    },
-  ],
-};
+import { useEvent } from "@/hooks/useEvent";
+import { EventTime } from "@/components/EventTime";
 
 export default function EventDetail() {
   const { data } = useUserData();
-  const { id } = useParams();
+  const { event } = useEvent();
 
   const [selectedTickets, setSelectedTickets] = useState<
-    Record<string, number>
+    Record<number, number>
   >({});
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [showLoginOverlay, setShowLoginOverlay] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
 
-  const event = mockEvent; // TODO: fetch by ID later
-
-  const handleTicketQuantityChange = (categoryId: string, change: number) => {
+  const handleTicketQuantityChange = (ticketId: number, change: number) => {
     setSelectedTickets((prev) => {
-      const currentQuantity = prev[categoryId] || 0;
-      const category = event.ticketCategories.find((c) => c.id === categoryId);
-      const maxQuantity = Math.min(category?.remainingCount || 0, 10);
+      const currentQuantity = prev[ticketId] || 0;
+      const category = event.tickets.find((c) => c.id === ticketId);
+      const maxQuantity = Math.min(category?.available || 0, 10);
       const newQuantity = Math.max(
         0,
-        Math.min(maxQuantity, currentQuantity + change)
+        Math.min(maxQuantity, currentQuantity + change),
       );
 
       if (newQuantity === 0) {
-        const { [categoryId]: _, ...rest } = prev;
+        const { [ticketId]: _, ...rest } = prev;
         return rest;
       }
 
-      return { ...prev, [categoryId]: newQuantity };
+      return { ...prev, [ticketId]: newQuantity };
     });
   };
 
   const getTotalAmount = () => {
     return Object.entries(selectedTickets).reduce(
-      (total, [categoryId, quantity]) => {
-        const category = event.ticketCategories.find(
-          (c) => c.id === categoryId
-        );
-        return total + (category?.price || 0) * quantity;
+      (total, [ticketId, quantity]) => {
+        const category = event.tickets.find((c) => String(c.id) === ticketId);
+        return total + (Number(category?.price) || 0) * quantity;
       },
-      0
+      0,
     );
   };
 
   const getTotalTickets = () => {
     return Object.values(selectedTickets).reduce(
       (total, qty) => total + qty,
-      0
+      0,
     );
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
   };
 
   const handlePayment = () => {
@@ -164,7 +80,6 @@ export default function EventDetail() {
       currency: "INR",
       name: event.title,
       description: "Ticket Booking",
-      image: event.image,
       handler: async function (response: any) {
         try {
           await updateOrder(orderId, { payment_status: "paid" });
@@ -178,7 +93,7 @@ export default function EventDetail() {
           });
 
           alert(
-            `Payment successful! Payment ID: ${response.razorpay_payment_id}`
+            `Payment successful! Payment ID: ${response.razorpay_payment_id}`,
           );
         } catch (err) {
           console.error("Error saving payment/order:", err);
@@ -227,6 +142,8 @@ export default function EventDetail() {
     }
   };
 
+  if (!event) return <></>;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -250,11 +167,19 @@ export default function EventDetail() {
           {/* Event Details */}
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <div className="aspect-video bg-gradient-subtle rounded-lg mb-6 flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>Event Image</p>
-                </div>
+              <div className="aspect-video bg-gradient-subtle rounded-lg mb-6 flex items-center justify-center overflow-hidden">
+                {event?.image_url ? (
+                  <img
+                    src={event.image_url}
+                    alt="Event"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-center text-muted-foreground">
+                    <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>Event Image</p>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-start justify-between mb-4">
@@ -268,15 +193,14 @@ export default function EventDetail() {
                   <div className="flex flex-wrap gap-4 text-muted-foreground">
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 mr-2" />
-                      {formatDate(event.date)}
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="w-4 h-4 mr-2" />
-                      {event.time}
+                      <EventTime
+                        start_time={event.start_time}
+                        end_time={event.end_time}
+                      />
                     </div>
                     <div className="flex items-center">
                       <MapPin className="w-4 h-4 mr-2" />
-                      {event.venue}, {event.location}
+                      {event.location}
                     </div>
                   </div>
                 </div>
@@ -307,7 +231,7 @@ export default function EventDetail() {
                 <div className="flex flex-wrap gap-2">
                   {event.organizers.map((org, i) => (
                     <Badge key={i} variant="outline">
-                      {org}
+                      {org.name}
                     </Badge>
                   ))}
                 </div>
@@ -323,43 +247,40 @@ export default function EventDetail() {
                   <CardTitle>Select Tickets</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {event.ticketCategories.map((category) => (
-                    <div key={category.id} className="space-y-3">
+                  {event.tickets.map((ticket) => (
+                    <div key={ticket.id} className="space-y-3">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h4 className="font-semibold text-foreground">
-                            {category.name}
+                            {ticket.name}
                           </h4>
-                          <p className="text-sm text-muted-foreground">
-                            {category.description}
-                          </p>
                           <p className="text-sm text-muted-foreground mt-1">
-                            {category.remainingCount > 0
-                              ? `${category.remainingCount} tickets remaining`
+                            {ticket.available > 0
+                              ? `${ticket.available} tickets remaining`
                               : "Sold out"}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-lg">${category.price}</p>
+                          <p className="font-bold text-lg">${ticket.price}</p>
                         </div>
                       </div>
 
-                      {category.remainingCount > 0 && (
+                      {ticket.available > 0 && (
                         <div className="flex items-center justify-between bg-muted rounded-lg p-2">
                           <Button
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
                             onClick={() =>
-                              handleTicketQuantityChange(category.id, -1)
+                              handleTicketQuantityChange(ticket.id, -1)
                             }
-                            disabled={!selectedTickets[category.id]}
+                            disabled={!selectedTickets[ticket.id]}
                           >
                             <Minus className="w-3 h-3" />
                           </Button>
 
                           <span className="px-4 font-medium">
-                            {selectedTickets[category.id] || 0}
+                            {selectedTickets[ticket.id] || 0}
                           </span>
 
                           <Button
@@ -367,11 +288,11 @@ export default function EventDetail() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() =>
-                              handleTicketQuantityChange(category.id, 1)
+                              handleTicketQuantityChange(ticket.id, 1)
                             }
                             disabled={
-                              (selectedTickets[category.id] || 0) >=
-                              Math.min(category.remainingCount, 10)
+                              (selectedTickets[ticket.id] || 0) >=
+                              Math.min(ticket.available, 10)
                             }
                           >
                             <Plus className="w-3 h-3" />
@@ -379,7 +300,7 @@ export default function EventDetail() {
                         </div>
                       )}
 
-                      {category.remainingCount === 0 && (
+                      {ticket.available === 0 && (
                         <Button disabled className="w-full">
                           Sold Out
                         </Button>
@@ -417,28 +338,25 @@ export default function EventDetail() {
                   <CardTitle>Select Tickets</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {event.ticketCategories.map((category) => (
-                    <div key={category.id} className="space-y-3">
+                  {event.tickets.map((ticket) => (
+                    <div key={ticket.id} className="space-y-3">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h4 className="font-semibold text-foreground">
-                            {category.name}
+                            {ticket.name}
                           </h4>
-                          <p className="text-sm text-muted-foreground">
-                            {category.description}
-                          </p>
                           <p className="text-sm text-muted-foreground mt-1">
-                            {category.remainingCount > 0
-                              ? `${category.remainingCount} tickets remaining`
+                            {ticket.available > 0
+                              ? `${ticket.available} tickets remaining`
                               : "Sold out"}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-lg">${category.price}</p>
+                          <p className="font-bold text-lg">${ticket.price}</p>
                         </div>
                       </div>
 
-                      {category.remainingCount > 0 ? (
+                      {ticket.available > 0 ? (
                         <div className="flex items-center justify-between bg-muted rounded-lg p-2">
                           <Button
                             variant="outline"
@@ -511,21 +429,17 @@ export default function EventDetail() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                {Object.entries(selectedTickets).map(
-                  ([categoryId, quantity]) => {
-                    const category = event.ticketCategories.find(
-                      (c) => c.id === categoryId
-                    );
-                    return (
-                      <div key={categoryId} className="flex justify-between">
-                        <span>
-                          {category?.name} × {quantity}
-                        </span>
-                        <span>${(category?.price || 0) * quantity}</span>
-                      </div>
-                    );
-                  }
-                )}
+                {Object.entries(selectedTickets).map(([id, quantity]) => {
+                  const ticket = event.tickets.find((c) => String(c.id) === id);
+                  return (
+                    <div key={id} className="flex justify-between">
+                      <span>
+                        {ticket?.name} × {quantity}
+                      </span>
+                      <span>${(Number(ticket?.price) || 0) * quantity}</span>
+                    </div>
+                  );
+                })}
               </div>
               <Separator />
               <div className="flex justify-between font-bold">
