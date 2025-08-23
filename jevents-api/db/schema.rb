@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_23_010138) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_23_032330) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -128,6 +128,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_23_010138) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "capacity"
+    t.integer "available"
     t.index ["event_id"], name: "index_tickets_on_event_id"
     t.index ["user_id"], name: "index_tickets_on_user_id"
   end

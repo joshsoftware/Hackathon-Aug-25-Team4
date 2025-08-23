@@ -10,11 +10,7 @@ class EventsController < ApplicationController
 			total_revenue = Order.where(event_id: events.pluck(:id), payment_status: 1).sum(:final_amount)
 			attendees = Order.where(event_id: events.pluck(:id)).select(:user_id).distinct.count
 
-			render json: {
-				events: events.as_json,
-				total_revenue: total_revenue,
-				attendees: attendees
-			}, status: :ok
+			render json: events, status: :ok
 		else
 			events = Event.all
 			render json: events, status: :ok
