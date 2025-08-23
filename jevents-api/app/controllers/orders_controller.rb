@@ -3,13 +3,42 @@ class OrdersController < ApplicationController
 
   # GET /orders
   def index
-    @orders = Order.all
-    render json: @orders
+    orders = current_user.orders.includes(:bookings)
+
+    render json: orders.as_json(
+      include: {
+        bookings: {
+          include: {
+            ticket: {
+              include: {
+                event: {
+                  methods: :image_url
+                }
+              }
+            }
+          }
+        }
+      }
+    )
   end
 
   # GET /orders/:id
   def show
-    render json: @order
+    render json: @order.as_json(
+      include: {
+        bookings: {
+          include: {
+            ticket: {
+              include: {
+                event: {
+                  methods: :image_url
+                }
+              }
+            }
+          }
+        }
+      }
+    )
   end
 
   # POST /orders

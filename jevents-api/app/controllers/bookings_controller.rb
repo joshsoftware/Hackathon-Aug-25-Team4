@@ -5,11 +5,13 @@ class BookingsController < ApplicationController
 
     created_bookings = []
     errors = []
+    order_id = params[:order_id]
 
     bookings_params.each do |booking_param|
       booking = current_user.bookings.build(
         ticket_id: booking_param[:ticket_id],
-        name: booking_param[:name]
+        name: booking_param[:name],
+        order_id: order_id
       )
 
       if booking.save
