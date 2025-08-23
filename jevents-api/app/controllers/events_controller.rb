@@ -1,38 +1,40 @@
 class EventsController < ApplicationController
-  skip_before_action :authenticate_request, only: [:index, :show]
+  skip_before_action :authenticate_request, only: [ :index, :show ]
 
   # GET /events - Get all events
-	def index
+  def index
     user_id = params[:user_id]
-  
+
     if user_id.present?
-      events = Event.where(user_id: user_id)
-    else
-      events = Event.all
-    end
-  
-    render json: events.as_json(methods: [:image_url]), status: :ok
+      events = Event.joins(:event_organizers).where(event_organizers: { user_id: user_id })
+			total_revenue = Order.where(event_id: events.pluck(:id), payment_status: 1).sum(:final_amount)
+			attendees = Order.where(event_id: events.pluck(:id)).select(:user_id).distinct.count
+
+			render json: {
+				events: events.as_json,
+				total_revenue: total_revenue,
+				attendees: attendees
+			}, status: :ok
+		else
+			events = Event.all
+			render json: events, status: :ok
+		end
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
   end
-  
+
 
   # GET /events/:id - Get specific event
   def show
+		@event = Event.find(params[:id])
+    event_data = @event.as_json(include: :tickets)
 
-    @event = Event.find(params[:id])
-    
-    event_data = @event.as_json(
-      include: :tickets,
-      methods: [:image_url]
-    )
-  
     if current_user.nil?
       event_data["coupons"] = nil
     elsif current_user.role == "organizer" && @event.organizers.include?(current_user)
       event_data["coupons"] = @event.coupons.as_json
     end
-    
+
     render json: event_data, status: :ok
   rescue => e
     render json: { error: e.message }, status: :internal_server_error
@@ -64,7 +66,7 @@ class EventsController < ApplicationController
 
         render json: @event.as_json(
           include: :tickets,
-          methods: [:image_url]
+          methods: [ :image_url ]
         ), status: :created
       else
         render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity

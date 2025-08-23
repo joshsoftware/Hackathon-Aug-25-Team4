@@ -6,7 +6,12 @@ export interface Order {
   total_amount: number;
   discount_applied: number;
   final_amount: number;
-  payment_status: "pending" | "paid" | "failed" | "refunded" | "partial_refunded";
+  payment_status:
+    | "pending"
+    | "paid"
+    | "failed"
+    | "refunded"
+    | "partial_refunded";
   created_at: string;
   updated_at: string;
 }
@@ -35,4 +40,11 @@ export interface OrderResponse {
 
 export interface OrdersResponse {
   orders: Order[];
+}
+
+export interface StatsResponse {
+  user_id: number;
+  total_events: number;
+  total_revenue: string;
+  attendees: number;
 }
